@@ -1,0 +1,7 @@
+[General]
+Name=IDEExplorerXE10
+Project=1
+[Classes]
+Count=2
+Class0="TDGHIDEExplorer","TNotifierObject, IOTAWizard, IOTAMenuWizard","DGHIDEExplorer","35","D:\HoylD\Borland Studio Projects\IDE Addins\Delphi IDE Explorer\Source\DGHIDEExplorer.pas"
+Class1="TDGHIDEExplorerForm","TForm","DGHExplFrm","30","D:\HoylD\Borland Studio Projects\IDE Addins\Delphi IDE Explorer\Source\DGHExplFrm.pas"

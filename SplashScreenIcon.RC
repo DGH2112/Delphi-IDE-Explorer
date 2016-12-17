@@ -1,0 +1,9 @@
+/*
+
+  This is a Windows Resource File which generates a Splash Screen Icon for the
+  RAD Studio IDE.
+
+*/
+IDEExplorerSplashScreenBitMap24x24 BITMAP "Icons\New IDE Explorer 24x24 Icon.bmp"
+IDEExplorerSplashScreenBitMap48x48 BITMAP "Icons\New IDE Explorer 48x48 Icon.bmp"
+
