@@ -1,8 +1,8 @@
 LANGUAGE LANG_ENGLISH,SUBLANG_ENGLISH_US
 
 1 VERSIONINFO LOADONCALL MOVEABLE DISCARDABLE IMPURE
-FILEVERSION 2, 0, 0, 464
-PRODUCTVERSION 2, 0, 0, 464
+FILEVERSION 2, 0, 1, 467
+PRODUCTVERSION 2, 0, 1, 467
 FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
 FILEOS VOS__WINDOWS32
 FILETYPE VFT_APP
@@ -12,15 +12,15 @@ FILETYPE VFT_APP
     BLOCK "040904E4"
     {
      VALUE "CompanyName", "Season's Fall Music\000"
-     VALUE "FileDescription", "A packe to allow you to browser the internal published properties of the IDE\000"
-     VALUE "FileVersion", "2.0.0.464\000"
+     VALUE "FileDescription", "IDEExplorer: A package to allow you to browser the internal fields, properties, methods and events of the IDE\000"
+     VALUE "FileVersion", "2.0.1.467\000"
      VALUE "InternalName", "IDEExplorer\000"
      VALUE "LegalCopyright", "Season's Fall Music\000"
      VALUE "LegalTrademarks", "Season's Fall Music\000"
      VALUE "OriginalFilename", "IDEExplorer\000"
      VALUE "ProductName", "IDEExplorer\000"
-     VALUE "ProductVersion", "2.0\000"
-     VALUE "Comments", "A packe to allow you to browser the internal published properties of the IDE\000"
+     VALUE "ProductVersion", "2.0a\000"
+     VALUE "Comments", "IDEExplorer: A package to allow you to browser the internal fields, properties, methods and events of the IDE\000"
     }
   }
   BLOCK "VarFileInfo"

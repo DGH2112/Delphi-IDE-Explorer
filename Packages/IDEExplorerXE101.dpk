@@ -1,3 +1,13 @@
+(**
+
+  This module contains a package for the Delphi IDE Explorer, a RAD Studio IDE wizard / expert /
+  plug-in that allows you to explore the internals of the RAD Studio IDE.
+
+  @Author  David Hoyle
+  @Version 2.0
+  @Date    18 Dec 2016
+
+**)
 package IDEExplorerXE101;
 
 {$R *.res}

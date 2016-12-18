@@ -7,8 +7,8 @@ IncludeInProject=0
 CompileWithBRCC32=0
 MajorVer=2
 MinorVer=0
-ReleaseVer=0
-BuildVer=466
+ReleaseVer=1
+BuildVer=468
 ResourceName=..\IDEExplorerITHVerInfo
 WarnBefore=0
 WarnAfter=0
@@ -19,19 +19,19 @@ ZipFile=D:\HoylD\Web Page\Zips\ideexplorer.zip
 BasePath=D:\HoylD\RAD Studio\
 ExclusionFiles=
 
+[Additional Zip Files]
+Item0=D:\HoylD\RAD Studio\IDE Addins\Delphi IDE Explorer\Icons\*
+Item1=D:\HoylD\RAD Studio\IDE Addins\Delphi IDE Explorer\Images\*
+
 [VersionInfo]
 CompanyName=Season's Fall Music
-FileDescription=A packe to allow you to browser the internal published properties of the IDE
-FileVersion=2.0.0.466
+FileDescription=IDEExplorer: A package to allow you to browser the internal fields, properties, methods and events of the IDE
+FileVersion=2.0.1.468
 InternalName=IDEExplorer
 LegalCopyright=Season's Fall Music
 LegalTrademarks=Season's Fall Music
 OriginalFilename=IDEExplorer
 ProductName=IDEExplorer
-ProductVersion=2.0
-Comments=A packe to allow you to browser the internal published properties of the IDE
-
-[Additional Zip Files]
-Item0=D:\HoylD\RAD Studio\IDE Addins\Delphi IDE Explorer\Icons\*
-Item1=D:\HoylD\RAD Studio\IDE Addins\Delphi IDE Explorer\Images\*
+ProductVersion=2.0a
+Comments=IDEExplorer: A package to allow you to browser the internal fields, properties, methods and events of the IDE
 
