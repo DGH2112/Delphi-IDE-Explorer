@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 2.0
-  @Date    16 Apr 2016
+  @Date    18 Dec 2016
 
 **)
 Unit DGHRTTIFunctions;
@@ -130,7 +130,7 @@ Function ValueToString(Value : TValue) : String;
   End;
 
 Begin
-  Try
+  //Try
     Case Value.TypeInfo.Kind Of
       tkUnknown:     Result := '<Unknown>';
       tkInteger:     Result := Value.ToString;
@@ -157,10 +157,10 @@ Begin
     Else
       Result := '<Not handled>';
     End;
-  Except
-    On E : Exception Do
-      Result := 'Oops (' + E.ClassName + '): ' + E.Message;
-  End;
+  //Except
+  //  On E : Exception Do
+  //    Result := 'Oops (' + E.ClassName + '): ' + E.Message;
+  //End;
 End;
 
 (**
@@ -239,9 +239,9 @@ Begin
           Item.SubItems.Add(Format('%d ', [V.DataSize]));
           ProcessValue(Item, V, F.FieldType.ToString);
         Except
-          On E : Exception Do
+          On E : EInsufficientRtti Do
             Begin
-              while Item.SubItems.Count < 5 do
+              While Item.SubItems.Count < 5 Do
                 Item.SubItems.Add('');
               Item.SubItems.Add('Oops (' + E.ClassName + '): ' + E.Message);
             End;
@@ -344,7 +344,8 @@ Begin
     If P.IsReadable Then
       ProcessValue(Item, V, P.PropertyType.ToString);
   Except
-    On E : Exception Do
+    // Capture COM class registration errors
+    On E : EComponentError Do
       Begin
         While Item.SubItems.Count < 5 Do
           Item.SubItems.Add('');
@@ -483,7 +484,7 @@ Begin
   FoundClasses.Add(C);
   Ctx := TRttiContext.Create;
   Try
-    Try
+    //Try
       T := Ctx.GetType(C.ClassType);
       For F In T.GetFields Do
         If F.FieldType.TypeKind = tkClass Then
@@ -511,10 +512,10 @@ Begin
                   ProcessClass(tvTree, N, V.AsObject);
               End;
           End;
-    Except
-      On E : Exception Do
-        tvTree.Items.AddChild(ParentNode, '(' + E.ClassName + ')' + E.Message);
-    End;
+    //Except
+    //  On E : Exception Do
+    //    tvTree.Items.AddChild(ParentNode, '(' + E.ClassName + ')' + E.Message);
+    //End;
   Finally
     Ctx.Free;
   End;

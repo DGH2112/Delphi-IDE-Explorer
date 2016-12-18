@@ -8,7 +8,7 @@ CompileWithBRCC32=0
 MajorVer=2
 MinorVer=0
 ReleaseVer=1
-BuildVer=468
+BuildVer=477
 ResourceName=..\IDEExplorerITHVerInfo
 WarnBefore=0
 WarnAfter=0
@@ -26,7 +26,7 @@ Item1=D:\HoylD\RAD Studio\IDE Addins\Delphi IDE Explorer\Images\*
 [VersionInfo]
 CompanyName=Season's Fall Music
 FileDescription=IDEExplorer: A package to allow you to browser the internal fields, properties, methods and events of the IDE
-FileVersion=2.0.1.468
+FileVersion=2.0.1.477
 InternalName=IDEExplorer
 LegalCopyright=Season's Fall Music
 LegalTrademarks=Season's Fall Music

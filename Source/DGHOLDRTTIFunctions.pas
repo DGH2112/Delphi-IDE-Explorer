@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    17 Apr 2016
+  @Date    18 Dec 2016
 
 **)
 Unit DGHOLDRTTIFunctions;
@@ -156,7 +156,7 @@ Begin
           lvItem.ImageIndex := Integer(PropList[i].PropType^.Kind);
           lvItem.SubItems.Add(GetEnumName(TypeInfo(TTypeKind),
             Ord(PropList[i].PropType^.Kind)));
-          Try
+          //Try
             Case PropList[i].PropType^.Kind Of
               tkUnknown:     lvItem.SubItems.Add('< Unknown >');
               tkInteger:     lvItem.SubItems.Add(PropertyValueInteger(ptrData, PropList[i]));
@@ -183,9 +183,10 @@ Begin
             Else
               lvItem.SubItems.Add('< MISSING PROPERTY HANDLER >');
             End;
-          Except
-            lvItem.SubItems.Add('#Exception#');
-          End;
+          //Except
+          //  On E : Exception Do
+          //    lvItem.SubItems.Add(Format('Exception: %s', [E.Message]));
+          //End;
           If lvItem.SubItems[0] = 'TColor' Then
             lvItem.SubItems[2] := ColorToString(StrToInt(lvItem.SubItems[2]));
           If lvItem.SubItems[0] = 'TCursor' Then

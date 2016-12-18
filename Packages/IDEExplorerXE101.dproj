@@ -90,8 +90,9 @@
         <DCC_Optimize>false</DCC_Optimize>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
-        <Debugger_HostApplication>C:\Program Files (x86)\Embarcadero\Studio\17.0\bin\bds.exe</Debugger_HostApplication>
-        <Debugger_RunParams>-np -rIDEExplorerBPL</Debugger_RunParams>
+        <DCC_DebugDCUs>true</DCC_DebugDCUs>
+        <Debugger_HostApplication>C:\Program Files (x86)\Embarcadero\Studio\18.0\bin\bds.exe</Debugger_HostApplication>
+        <Debugger_RunParams>-rIDEExplorerBPL</Debugger_RunParams>
         <DCC_Description>Delphi IDE Explorer 2.0</DCC_Description>
         <DCC_BplOutput>..\</DCC_BplOutput>
         <VerInfo_Locale>1033</VerInfo_Locale>
