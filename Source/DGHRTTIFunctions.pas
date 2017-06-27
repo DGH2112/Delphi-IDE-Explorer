@@ -5,7 +5,7 @@
 
   @Author  David Hoyle
   @Version 2.0
-  @Date    18 Dec 2016
+  @Date    11 Mar 2017
 
 **)
 Unit DGHRTTIFunctions;
@@ -33,7 +33,8 @@ Uses
   TypInfo,
   Variants,
   Graphics,
-  Controls;
+  Controls,
+  Windows;
 
 Const
   (** This is a constant array of string to describe the different visibility aspects
@@ -481,24 +482,34 @@ Var
   iIndex: Integer;
 
 Begin
+  Exit;
   FoundClasses.Add(C);
   Ctx := TRttiContext.Create;
   Try
     //Try
+//      If C.ClassName = 'TTabColors' Then
+//        Exit;
+//      If C.ClassName = 'TBrush' Then
+//        Exit;
+//      If C Is TBrush Then
+//        Exit;
       T := Ctx.GetType(C.ClassType);
       For F In T.GetFields Do
-        If F.FieldType.TypeKind = tkClass Then
-          Begin
-            V := F.GetValue(C);
-            N := tvTree.Items.AddChildObject(ParentNode, F.Parent.Name + '.' + F.Name + ' : ' +
-              F.FieldType.ToString + ' ' + ValueToString(V), V.AsObject);
-            If Not V.IsEmpty Then
-              Begin
-                iIndex := FoundClasses.IndexOf(V.AsObject);
-                If iIndex = -1 Then
-                  ProcessClass(tvTree, N, V.AsObject);
-              End;
-          End;
+        Begin
+          OutputDebugString(PChar(F.ToString));
+          If F.FieldType.TypeKind = tkClass Then
+            Begin
+              V := F.GetValue(C);
+              N := tvTree.Items.AddChildObject(ParentNode, F.Parent.Name + '.' + F.Name + ' : ' +
+                F.FieldType.ToString + ' ' + ValueToString(V), V.AsObject);
+              If Not V.IsEmpty Then
+                Begin
+                  iIndex := FoundClasses.IndexOf(V.AsObject);
+                  If iIndex = -1 Then
+                    ProcessClass(tvTree, N, V.AsObject);
+                End;
+            End;
+        End;
       For P In T.GetProperties Do
         If P.PropertyType.TypeKind = tkClass Then
           Begin

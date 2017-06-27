@@ -2,7 +2,7 @@
 
   This module contains the explorer form interface.
 
-  @Date    17 Apr 2016
+  @Date    11 Mar 2017
   @Version 2.0
   @Author  David Hoyle
 
@@ -165,7 +165,7 @@ Procedure TDGHIDEExplorerForm.BuildFormComponentTree(Sender: TObject);
       ScreenForm.ClassName, ScreenForm);
     Item.ImageIndex := 2;
     Item.SelectedIndex := 2;
-    //: @bug Causes IDE to crash ProcessClass(tvComponentTree, Item, ScreenForm);
+    ProcessClass(tvComponentTree, Item, ScreenForm);
     GetComponents(Item, ScreenForm);
   End;
 
@@ -182,9 +182,9 @@ Begin
       Try
         FoundClasses.Clear;
         nApplication := tvComponentTree.Items.AddChildObject(Nil, 'Application', Application);
-        //: @bug Causes IDE to crash ProcessClass(tvComponentTree, nApplication, Application);
+        ProcessClass(tvComponentTree, nApplication, Application);
         nScreen := tvComponentTree.Items.AddChildObject(Nil, 'Screen', Screen);
-        //: @bug Causes IDE to crash ProcessClass(tvComponentTree, nScreen, Screen);
+        ProcessClass(tvComponentTree, nScreen, Screen);
         N := tvComponentTree.Items.AddChild(nScreen, 'Forms');
         For i := 0 To Screen.FormCount - 1 Do
           IterateForms(N, Screen.Forms[i]);
@@ -196,6 +196,7 @@ Begin
          IterateForms(N, Screen.DataModules[i]);
         nApplication.Expand(False);
         nScreen.Expand(False);
+        tvComponentTree.AlphaSort(True);
       Finally
         Items.EndUpdate;
       End;

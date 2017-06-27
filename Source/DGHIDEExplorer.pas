@@ -3,7 +3,7 @@
   This module contains a Delphi IDE wizard that displays a tree view of the
   Delphi IDEs published interface.
 
-  @Date    23 Oct 2016
+  @Date    11 Mar 2017
   @Version 2.0
   @Author  David Hoyle
 
@@ -19,7 +19,8 @@ Uses
   ToolsAPI,
   Menus;
 
-{$INCLUDE ..\..\..\Library\CompilerDefinitions.inc}
+{$INCLUDE CompilerDefinitions.inc}
+
 {$R 'IDEExplorerITHVerInfo.RES' '..\IDEExplorerITHVerInfo.RC'}
 {$R 'SplashScreenIcon.res' '..\SplashScreenIcon.RC'}
 
