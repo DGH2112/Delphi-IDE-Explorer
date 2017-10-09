@@ -1,0 +1,11 @@
+{
+   "id":"{45B8BA43-B67E-4511-BB20-E456C12060AF}",
+   "name":"IDE Explorer",
+   "license_type":"[custom]",
+   "license_file":"License.md",
+   "platforms":"Win32",
+   "package_compiler_min":21,
+   "package_compiler_max":32,
+   "compiler_min":21,
+   "compiler_max":32
+}
