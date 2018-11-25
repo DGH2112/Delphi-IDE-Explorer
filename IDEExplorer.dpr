@@ -29,7 +29,8 @@ uses
   IDEExplorer.Functions in 'Source\IDEExplorer.Functions.pas',
   IDEExplorer.Types in 'Source\IDEExplorer.Types.pas',
   IDEExplorer.ResourceStrings in 'Source\IDEExplorer.ResourceStrings.pas',
-  IDEExplorer.Constants in 'Source\IDEExplorer.Constants.pas';
+  IDEExplorer.Constants in 'Source\IDEExplorer.Constants.pas',
+  IDEExplorer.AboutBox in 'Source\IDEExplorer.AboutBox.pas';
 
 {$R *.res}
 

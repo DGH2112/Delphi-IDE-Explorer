@@ -114,6 +114,7 @@
         <DCCReference Include="Source\IDEExplorer.Types.pas"/>
         <DCCReference Include="Source\IDEExplorer.ResourceStrings.pas"/>
         <DCCReference Include="Source\IDEExplorer.Constants.pas"/>
+        <DCCReference Include="Source\IDEExplorer.AboutBox.pas"/>
         <None Include="Source\CompilerDefinitions.inc"/>
         <None Include="Source\LibrarySuffixes.inc"/>
         <BuildConfiguration Include="Release">

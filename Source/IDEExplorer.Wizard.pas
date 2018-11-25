@@ -56,7 +56,8 @@ Uses
   IDEExplorer.Functions,
   IDEExplorer.Types,
   IDEExplorer.Constants,
-  IDEExplorer.ResourceStrings;
+  IDEExplorer.ResourceStrings,
+  IDEExplorer.AboutBox;
 
 (**
 
@@ -111,25 +112,10 @@ End;
 **)
 Constructor TDGHIDEExplorer.Create;
 
-Var
-  bmSplashScreen : HBITMAP;
-  VersionInfo : TVersionInfo;
-  
 Begin
   Inherited Create;
   InstallSplashScreen;
-  FAboutBoxIndex := -1;
-  bmSplashScreen := LoadBitmap(hInstance, 'IDEExplorerSplashScreenBitMap48x48');
-  BuildNumber(VersionInfo);
-  With VersionInfo Do
-    FAboutBoxIndex := (BorlandIDEServices As IOTAAboutBoxServices).AddPluginInfo(
-      Format(strSplashScreenName, [iMajor, iMinor, Copy(strRevision, iBugFix + 1, 1), Application.Title]),
-      'An RAD Studio IDE Expert to allow you to browse the IDE''s published elements.',
-      bmSplashScreen,
-      False,
-      Format(strSplashScreenBuild, [iMajor, iMinor, iBugfix, iBuild]),
-      Format('SKU Build %d.%d.%d.%d', [iMajor, iMinor, iBugfix, iBuild])
-    );
+  FAboutBoxIndex := AddAboutBoxEntry;
 End;
 
 (**
@@ -143,11 +129,7 @@ End;
 Destructor TDGHIDEExplorer.Destroy;
 
 Begin
-  {$IFDEF D2005}
-  // Remove Aboutbox Plugin Interface
-  If FAboutBoxIndex > 0 Then
-    (BorlandIDEServices As IOTAAboutBoxServices).RemovePluginInfo(FAboutBoxIndex);
-  {$ENDIF}
+  RemoveAboutBoxEntry(FAboutBoxIndex);
   Inherited Destroy;
 End;
 
@@ -177,8 +159,11 @@ End;
 **)
 Function TDGHIDEExplorer.GetIDString : String;
 
+Const
+  strDGHIDEExplorer = '.DGH IDE Explorer';
+
 Begin
-  Result := '.Delphi IDE Explorer';
+  Result := strDGHIDEExplorer;
 End;
 
 (**
@@ -193,8 +178,11 @@ End;
 **)
 Function TDGHIDEExplorer.GetMenuText: String;
 
+ResourceString
+  strIDEExplorer = 'IDE Explorer';
+
 Begin
-  Result := 'IDE Explorer';
+  Result := strIDEExplorer;
 End;
 
 (**
@@ -209,8 +197,11 @@ End;
 **)
 Function TDGHIDEExplorer.GetName : String;
 
+Const
+  strDGHIDEExplorer = 'DGH IDE Explorer';
+
 Begin
-  Result := 'Delphi IDE Explorer';
+  Result := strDGHIDEExplorer;
 End;
 
 (**
