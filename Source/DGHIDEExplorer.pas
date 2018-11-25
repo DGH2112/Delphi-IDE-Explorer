@@ -3,7 +3,7 @@
   This module contains a Delphi IDE wizard that displays a tree view of the
   Delphi IDEs published interface.
 
-  @Date    11 Mar 2017
+  @Date    25 Nov 2018
   @Version 2.0
   @Author  David Hoyle
 
@@ -20,9 +20,6 @@ Uses
   Menus;
 
 {$INCLUDE CompilerDefinitions.inc}
-
-{$R 'IDEExplorerITHVerInfo.RES' '..\IDEExplorerITHVerInfo.RC'}
-{$R 'SplashScreenIcon.res' '..\SplashScreenIcon.RC'}
 
 Type
   (** A record to store the version information for the BPL. **)
@@ -58,7 +55,12 @@ Type
   End;
 
   Procedure Register;
+  Function InitWizard(Const BorlandIDEServices : IBorlandIDEServices; RegisterProc : TWizardRegisterProc;
+    var Terminate: TWizardTerminateProc) : Boolean; StdCall;
 
+Exports
+  InitWizard Name WizardEntryPoint;
+  
 Implementation
 
 Uses
@@ -76,7 +78,35 @@ ResourceString
   strSplashScreenName = 'IDE Explorer %d.%d%s for %s';
   (** A resource string for the build information on the splash screen **)
   strSplashScreenBuild = 'Freeware by David Hoyle (Build %d.%d.%d.%d)';
-{$ENDIF}(**
+{$ENDIF}
+
+(**
+
+  This is a procedure to initialising the wizard interface when loading as a DLL wizard.
+
+  @precon  None.
+  @postcon Initialises the wizard.
+
+  @nocheck MissingCONSTInParam
+  @nohint  Terminate
+
+  @param   BorlandIDEServices as an IBorlandIDEServices as a constant
+  @param   RegisterProc       as a TWizardRegisterProc
+  @param   Terminate          as a TWizardTerminateProc as a reference
+  @return  a Boolean
+
+**)
+Function InitWizard(Const BorlandIDEServices : IBorlandIDEServices;
+  RegisterProc : TWizardRegisterProc;
+  var Terminate: TWizardTerminateProc) : Boolean; StdCall; //FI:O804
+
+Begin
+  Result := Assigned(BorlandIDEServices);
+  If Result Then
+    RegisterProc(TDGHIDEExplorer.Create);
+End;
+
+(**
 
   This method registers the wizard with the Delphi IDE when it is loaded.
 
@@ -149,8 +179,8 @@ Constructor TDGHIDEExplorer.Create;
 
 Begin
   Inherited Create;
-  iAboutPluginIndex := -1;
   {$IFDEF D2005}
+  iAboutPluginIndex := -1;
   BuildNumber(VersionInfo);
   // Add Splash Screen
   {$IFDEF D2007}

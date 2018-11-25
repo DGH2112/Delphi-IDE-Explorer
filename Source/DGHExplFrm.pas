@@ -22,7 +22,7 @@ Uses
   Dialogs,
   ComCtrls,
   ExtCtrls,
-  ImgList;
+  ImgList, System.ImageList;
 
 Type
   (** This class represent a form for displaying the internal published elements of the
