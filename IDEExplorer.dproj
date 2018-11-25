@@ -109,6 +109,11 @@
         <DCCReference Include="Source\IDEExplorer.Wizard.pas"/>
         <DCCReference Include="Source\DGHOLDRTTIFunctions.pas"/>
         <DCCReference Include="Source\DGHRTTIFunctions.pas"/>
+        <DCCReference Include="Source\IDEExplorer.SplashScreen.pas"/>
+        <DCCReference Include="Source\IDEExplorer.Functions.pas"/>
+        <DCCReference Include="Source\IDEExplorer.Types.pas"/>
+        <DCCReference Include="Source\IDEExplorer.ResourceStrings.pas"/>
+        <DCCReference Include="Source\IDEExplorer.Constants.pas"/>
         <None Include="Source\CompilerDefinitions.inc"/>
         <None Include="Source\LibrarySuffixes.inc"/>
         <BuildConfiguration Include="Release">

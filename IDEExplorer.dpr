@@ -24,7 +24,12 @@ uses
   DGHExplFrm in 'Source\DGHExplFrm.pas' {DGHIDEExplorerForm},
   IDEExplorer.Wizard in 'Source\IDEExplorer.Wizard.pas',
   DGHOLDRTTIFunctions in 'Source\DGHOLDRTTIFunctions.pas',
-  DGHRTTIFunctions in 'Source\DGHRTTIFunctions.pas';
+  DGHRTTIFunctions in 'Source\DGHRTTIFunctions.pas',
+  IDEExplorer.SplashScreen in 'Source\IDEExplorer.SplashScreen.pas',
+  IDEExplorer.Functions in 'Source\IDEExplorer.Functions.pas',
+  IDEExplorer.Types in 'Source\IDEExplorer.Types.pas',
+  IDEExplorer.ResourceStrings in 'Source\IDEExplorer.ResourceStrings.pas',
+  IDEExplorer.Constants in 'Source\IDEExplorer.Constants.pas';
 
 {$R *.res}
 

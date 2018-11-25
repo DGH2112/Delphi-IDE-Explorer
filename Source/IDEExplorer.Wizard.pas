@@ -22,25 +22,10 @@ Uses
 {$INCLUDE CompilerDefinitions.inc}
 
 Type
-  (** A record to store the version information for the BPL. **)
-  TVersionInfo = Record
-    iMajor : Integer;
-    iMinor : Integer;
-    iBugfix : Integer;
-    iBuild : Integer;
-  End;
-
   (** This is a Wizard/Menu Wizard to implement a simply menu under the IDEs help. **)
   TDGHIDEExplorer = Class(TNotifierObject, IOTAWizard, IOTAMenuWizard)
   Strict Private
-    {$IFDEF D2005}
-    VersionInfo : TVersionInfo;
-    {$IFDEF D2007}
-    bmSplashScreen24x24 : HBITMAP;
-    {$ENDIF}
-    bmSplashScreen48x48 : HBITMAP;
-    iAboutPluginIndex : Integer;
-    {$ENDIF}
+    FAboutBoxIndex : Integer;
   Strict Protected
   Public
     Constructor Create;
@@ -65,65 +50,13 @@ Implementation
 
 Uses
   SysUtils,
+  Forms,
+  IDEExplorer.SplashScreen,
   DGHExplFrm,
-  Forms;
-
-{$IFDEF D2005}
-Const
-  (** A const to define the build bugfix letters. **)
-  strRevision : String = ' abcdefghijklmnopqrstuvwxyz';
-
-ResourceString
-  (** A resource string for to be displayed on the splash screen. **)
-  strSplashScreenName = 'IDE Explorer %d.%d%s for %s';
-  (** A resource string for the build information on the splash screen **)
-  strSplashScreenBuild = 'Freeware by David Hoyle (Build %d.%d.%d.%d)';
-{$ENDIF}
-
-{$IFDEF D2005}
-(**
-
-  This method extracts the build number from the executables resource.
-
-  @precon  None.
-  @postcon the build information is placed into the passed version record.
-
-  @param   VersionInfo as a TVersionInfo as a reference
-
-**)
-Procedure BuildNumber(Var VersionInfo: TVersionInfo);
-
-Const
-  iShiftRight = 16;
-  iWordMask = $FFFF;
-
-Var
-  VerInfoSize: DWORD;
-  VerInfo: Pointer;
-  VerValueSize: DWORD;
-  VerValue: PVSFixedFileInfo;
-  Dummy: DWORD;
-  strBuffer: Array [0 .. MAX_PATH] Of Char;
-
-Begin
-  GetModuleFileName(hInstance, strBuffer, MAX_PATH);
-  VerInfoSize := GetFileVersionInfoSize(strBuffer, Dummy);
-  If VerInfoSize <> 0 Then
-    Begin
-      GetMem(VerInfo, VerInfoSize);
-      Try
-        GetFileVersionInfo(strBuffer, 0, VerInfoSize, VerInfo);
-        VerQueryValue(VerInfo, '\', Pointer(VerValue), VerValueSize);
-        VersionInfo.iMajor := VerValue^.dwFileVersionMS Shr iShiftRight;
-        VersionInfo.iMinor := VerValue^.dwFileVersionMS And iWordMask;
-        VersionInfo.iBugfix := VerValue^.dwFileVersionLS Shr iShiftRight;
-        VersionInfo.iBuild := VerValue^.dwFileVersionLS And iWordMask;
-      Finally
-        FreeMem(VerInfo, VerInfoSize);
-      End;
-    End;
-End;
-{$ENDIF}
+  IDEExplorer.Functions,
+  IDEExplorer.Types,
+  IDEExplorer.Constants,
+  IDEExplorer.ResourceStrings;
 
 (**
 
@@ -178,40 +111,25 @@ End;
 **)
 Constructor TDGHIDEExplorer.Create;
 
+Var
+  bmSplashScreen : HBITMAP;
+  VersionInfo : TVersionInfo;
+  
 Begin
   Inherited Create;
-  {$IFDEF D2005}
-  iAboutPluginIndex := -1;
+  InstallSplashScreen;
+  FAboutBoxIndex := -1;
+  bmSplashScreen := LoadBitmap(hInstance, 'IDEExplorerSplashScreenBitMap48x48');
   BuildNumber(VersionInfo);
-  // Add Splash Screen
-  {$IFDEF D2007}
-  bmSplashScreen24x24 := LoadBitmap(hInstance, 'IDEExplorerSplashScreenBitMap24x24');
-  {$ELSE}
-  bmSplashScreen48x48 := LoadBitmap(hInstance, 'IDEExplorerSplashScreenBitMap48x48');
-  {$ENDIF}
   With VersionInfo Do
-    (SplashScreenServices As IOTASplashScreenServices).AddPluginBitmap(
-      Format(strSplashScreenName, [iMajor, iMinor, Copy(strRevision, iBugFix + 1, 1), Application.Title]),
-      {$IFDEF D2007}
-      bmSplashScreen24x24,
-      {$ELSE}
-      bmSplashScreen48x48,
-      {$ENDIF}
-      False,
-      Format(strSplashScreenBuild, [iMajor, iMinor, iBugfix, iBuild])
-    );
-  // Aboutbox plugin
-  bmSplashScreen48x48 := LoadBitmap(hInstance, 'IDEExplorerSplashScreenBitMap48x48');
-  With VersionInfo Do
-    iAboutPluginIndex := (BorlandIDEServices As IOTAAboutBoxServices).AddPluginInfo(
+    FAboutBoxIndex := (BorlandIDEServices As IOTAAboutBoxServices).AddPluginInfo(
       Format(strSplashScreenName, [iMajor, iMinor, Copy(strRevision, iBugFix + 1, 1), Application.Title]),
       'An RAD Studio IDE Expert to allow you to browse the IDE''s published elements.',
-      bmSplashScreen48x48,
+      bmSplashScreen,
       False,
       Format(strSplashScreenBuild, [iMajor, iMinor, iBugfix, iBuild]),
       Format('SKU Build %d.%d.%d.%d', [iMajor, iMinor, iBugfix, iBuild])
     );
-  {$ENDIF}
 End;
 
 (**
@@ -227,8 +145,8 @@ Destructor TDGHIDEExplorer.Destroy;
 Begin
   {$IFDEF D2005}
   // Remove Aboutbox Plugin Interface
-  If iAboutPluginIndex > 0 Then
-    (BorlandIDEServices As IOTAAboutBoxServices).RemovePluginInfo(iAboutPluginIndex);
+  If FAboutBoxIndex > 0 Then
+    (BorlandIDEServices As IOTAAboutBoxServices).RemovePluginInfo(FAboutBoxIndex);
   {$ENDIF}
   Inherited Destroy;
 End;
