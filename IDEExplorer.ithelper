@@ -8,7 +8,7 @@ CompileWithBRCC32=0
 MajorVer=1
 MinorVer=0
 ReleaseVer=0
-BuildVer=9
+BuildVer=11
 ResourceName=IDEExplorerITHVerInfo
 WarnBefore=0
 WarnAfter=0
@@ -23,7 +23,7 @@ ExclusionFiles=
 [VersionInfo]
 CompanyName=
 FileDescription=
-FileVersion=1.0.0.9
+FileVersion=1.0.0.11
 InternalName=
 LegalCopyright=
 LegalTrademarks=

@@ -106,7 +106,7 @@
         <DCCReference Include="Source\DGHExplFrm.pas">
             <Form>DGHIDEExplorerForm</Form>
         </DCCReference>
-        <DCCReference Include="Source\DGHIDEExplorer.pas"/>
+        <DCCReference Include="Source\IDEExplorer.Wizard.pas"/>
         <DCCReference Include="Source\DGHOLDRTTIFunctions.pas"/>
         <DCCReference Include="Source\DGHRTTIFunctions.pas"/>
         <None Include="Source\CompilerDefinitions.inc"/>

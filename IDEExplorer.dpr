@@ -22,7 +22,7 @@ uses
   System.SysUtils,
   System.Classes,
   DGHExplFrm in 'Source\DGHExplFrm.pas' {DGHIDEExplorerForm},
-  DGHIDEExplorer in 'Source\DGHIDEExplorer.pas',
+  IDEExplorer.Wizard in 'Source\IDEExplorer.Wizard.pas',
   DGHOLDRTTIFunctions in 'Source\DGHOLDRTTIFunctions.pas',
   DGHRTTIFunctions in 'Source\DGHRTTIFunctions.pas';
 

@@ -8,7 +8,7 @@
   @Author  David Hoyle
 
 **)
-Unit DGHIDEExplorer;
+Unit IDEExplorer.Wizard;
 
 Interface
 
