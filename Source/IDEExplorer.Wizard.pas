@@ -80,6 +80,51 @@ ResourceString
   strSplashScreenBuild = 'Freeware by David Hoyle (Build %d.%d.%d.%d)';
 {$ENDIF}
 
+{$IFDEF D2005}
+(**
+
+  This method extracts the build number from the executables resource.
+
+  @precon  None.
+  @postcon the build information is placed into the passed version record.
+
+  @param   VersionInfo as a TVersionInfo as a reference
+
+**)
+Procedure BuildNumber(Var VersionInfo: TVersionInfo);
+
+Const
+  iShiftRight = 16;
+  iWordMask = $FFFF;
+
+Var
+  VerInfoSize: DWORD;
+  VerInfo: Pointer;
+  VerValueSize: DWORD;
+  VerValue: PVSFixedFileInfo;
+  Dummy: DWORD;
+  strBuffer: Array [0 .. MAX_PATH] Of Char;
+
+Begin
+  GetModuleFileName(hInstance, strBuffer, MAX_PATH);
+  VerInfoSize := GetFileVersionInfoSize(strBuffer, Dummy);
+  If VerInfoSize <> 0 Then
+    Begin
+      GetMem(VerInfo, VerInfoSize);
+      Try
+        GetFileVersionInfo(strBuffer, 0, VerInfoSize, VerInfo);
+        VerQueryValue(VerInfo, '\', Pointer(VerValue), VerValueSize);
+        VersionInfo.iMajor := VerValue^.dwFileVersionMS Shr iShiftRight;
+        VersionInfo.iMinor := VerValue^.dwFileVersionMS And iWordMask;
+        VersionInfo.iBugfix := VerValue^.dwFileVersionLS Shr iShiftRight;
+        VersionInfo.iBuild := VerValue^.dwFileVersionLS And iWordMask;
+      Finally
+        FreeMem(VerInfo, VerInfoSize);
+      End;
+    End;
+End;
+{$ENDIF}
+
 (**
 
   This is a procedure to initialising the wizard interface when loading as a DLL wizard.
@@ -120,50 +165,6 @@ Procedure Register;
 Begin
   RegisterPackageWizard(TDGHIDEExplorer.Create);
 End;
-
-{$IFDEF D2005}
-(**
-
-  This method extracts the build number from the executables resource.
-
-  @precon  None.
-  @postcon the build information is placed into the passed version record.
-
-  @param   VersionInfo as a TVersionInfo as a reference
-
-**)
-Procedure BuildNumber(Var VersionInfo: TVersionInfo);
-
-Var
-  VerInfoSize: DWORD;
-  VerInfo: Pointer;
-  VerValueSize: DWORD;
-  VerValue: PVSFixedFileInfo;
-  Dummy: DWORD;
-  strBuffer: Array [0 .. MAX_PATH] Of Char;
-
-Begin
-  GetModuleFileName(hInstance, strBuffer, MAX_PATH);
-  VerInfoSize := GetFileVersionInfoSize(strBuffer, Dummy);
-  If VerInfoSize <> 0 Then
-    Begin
-      GetMem(VerInfo, VerInfoSize);
-      Try
-        GetFileVersionInfo(strBuffer, 0, VerInfoSize, VerInfo);
-        VerQueryValue(VerInfo, '\', Pointer(VerValue), VerValueSize);
-        With VerValue^ Do
-          Begin
-            VersionInfo.iMajor := dwFileVersionMS Shr 16;
-            VersionInfo.iMinor := dwFileVersionMS And $FFFF;
-            VersionInfo.iBugfix := dwFileVersionLS Shr 16;
-            VersionInfo.iBuild := dwFileVersionLS And $FFFF;
-          End;
-      Finally
-        FreeMem(VerInfo, VerInfoSize);
-      End;
-    End;
-End;
-{$ENDIF}
 
 { TDGHIDEExplorer Class Methods }
 
@@ -243,12 +244,7 @@ End;
 Procedure TDGHIDEExplorer.Execute;
 
 Begin
-  With TDGHIDEExplorerForm.Create(Nil) Do
-    Try
-      ShowModal;
-    Finally
-      Free;
-    End;
+  TDGHIDEExplorerForm.Execute;
 End;
 
 (**
@@ -256,7 +252,7 @@ End;
   This is a getter method for the IDString property.
 
   @precon  None.
-  @postcon Returns the IS String for the wizard.
+  @postcon Returns the ID String for the wizard.
 
   @return  a String
 

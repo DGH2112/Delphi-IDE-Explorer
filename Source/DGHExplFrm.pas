@@ -2,7 +2,7 @@
 
   This module contains the explorer form interface.
 
-  @Date    11 Mar 2017
+  @Date    25 Nov 2018
   @Version 2.0
   @Author  David Hoyle
 
@@ -22,11 +22,13 @@ Uses
   Dialogs,
   ComCtrls,
   ExtCtrls,
-  ImgList, System.ImageList;
+  ImgList,
+  System.ImageList;
+
+{$INCLUDE CompilerDefinitions.inc}
 
 Type
-  (** This class represent a form for displaying the internal published elements of the
-      IDE. **)
+  (** This class represent a form for displaying the internal published elements of the IDE. **)
   TDGHIDEExplorerForm = Class(TForm)
     tvComponentTree: TTreeView;
     ilImageList1: TImageList;
@@ -52,7 +54,6 @@ Type
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
   Strict Private
-    {Private declarations}
     Procedure GetComponents(Node: TTreeNode; Component: TComponent);
     Procedure LoadSettings;
     Procedure SaveSettings;
@@ -60,7 +61,7 @@ Type
     Procedure BuildParentHeritage(Node : TTreeNode);
   Strict Protected
   Public
-    {Public declarations}
+    Class Procedure Execute;
   End;
 
 Implementation
@@ -69,6 +70,7 @@ Implementation
 
 
 Uses
+  ToolsAPI,
   Registry,
   DGHRTTIFunctions,
   DGHOLDRTTIFunctions;
@@ -359,6 +361,31 @@ Begin
       End;
   Finally
     tvHierarchies.Items.EndUpdate;
+  End;
+End;
+
+Class Procedure TDGHIDEExplorerForm.Execute;
+
+Var
+  F : TDGHIDEExplorerForm;
+  { $IFDEF DXE102
+  ITS : IOTAIDEThemingServices250;
+  $ENDIF}
+  
+Begin
+  F := TDGHIDEExplorerForm.Create(Application.MainForm);
+  Try
+    { $IFDEF DXE102
+    If Supports(BorlandIDEServices, IOTAIDEThemingServices, ITS) Then
+      If ITS.IDEThemingEnabled Then
+        Begin
+          ITS.RegisterFormClass(TDGHIDEExplorerForm);
+          ITS.ApplyTheme(F);
+        End;
+    $ENDIF}
+    F.ShowModal;
+  Finally
+    F.Free;
   End;
 End;
 
