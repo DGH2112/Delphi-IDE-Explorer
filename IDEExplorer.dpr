@@ -21,10 +21,10 @@ Library IDEExplorer;
 uses
   System.SysUtils,
   System.Classes,
-  DGHExplFrm in 'Source\DGHExplFrm.pas' {DGHIDEExplorerForm},
+  IDEExplorer.ExplorerForm in 'Source\IDEExplorer.ExplorerForm.pas' {DGHIDEExplorerForm},
   IDEExplorer.Wizard in 'Source\IDEExplorer.Wizard.pas',
-  DGHOLDRTTIFunctions in 'Source\DGHOLDRTTIFunctions.pas',
-  DGHRTTIFunctions in 'Source\DGHRTTIFunctions.pas',
+  IDEExplorer.OLDRTTIFunctions in 'Source\IDEExplorer.OLDRTTIFunctions.pas',
+  IDEExplorer.RTTIFunctions in 'Source\IDEExplorer.RTTIFunctions.pas',
   IDEExplorer.SplashScreen in 'Source\IDEExplorer.SplashScreen.pas',
   IDEExplorer.Functions in 'Source\IDEExplorer.Functions.pas',
   IDEExplorer.Types in 'Source\IDEExplorer.Types.pas',

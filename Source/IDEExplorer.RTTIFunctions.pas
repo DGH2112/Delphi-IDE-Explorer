@@ -8,7 +8,7 @@
   @Date    01 Dec 2018
 
 **)
-Unit DGHRTTIFunctions;
+Unit IDEExplorer.RTTIFunctions;
 
 Interface
 

@@ -7,7 +7,7 @@
   @Date    01 Dec 2018
 
 **)
-Unit DGHOLDRTTIFunctions;
+Unit IDEExplorer.OLDRTTIFunctions;
 
 Interface
 

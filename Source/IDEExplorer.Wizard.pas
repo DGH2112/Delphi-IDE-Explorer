@@ -3,7 +3,7 @@
   This module contains a Delphi IDE wizard that displays a tree view of the
   Delphi IDEs published interface.
 
-  @Date    25 Nov 2018
+  @Date    01 Dec 2018
   @Version 2.0
   @Author  David Hoyle
 
@@ -52,7 +52,7 @@ Uses
   SysUtils,
   Forms,
   IDEExplorer.SplashScreen,
-  DGHExplFrm,
+  IDEExplorer.ExplorerForm,
   IDEExplorer.Functions,
   IDEExplorer.Types,
   IDEExplorer.Constants,

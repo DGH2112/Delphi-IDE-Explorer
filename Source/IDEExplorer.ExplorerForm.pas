@@ -9,7 +9,7 @@
   @todo    Add a progress bar
 
 **)
-Unit DGHExplFrm;
+Unit IDEExplorer.ExplorerForm;
 
 Interface
 
@@ -74,8 +74,8 @@ Implementation
 Uses
   ToolsAPI,
   Registry,
-  DGHRTTIFunctions,
-  DGHOLDRTTIFunctions;
+  IDEExplorer.RTTIFunctions,
+  IDEExplorer.OLDRTTIFunctions;
 
 Type
   (** An enumerate to define the tree images. **)

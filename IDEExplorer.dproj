@@ -103,12 +103,12 @@
         <RcCompile Include="SplashScreenIcon.RC">
             <Form>SplashScreenIcon.res</Form>
         </RcCompile>
-        <DCCReference Include="Source\DGHExplFrm.pas">
+        <DCCReference Include="Source\IDEExplorer.ExplorerForm.pas">
             <Form>DGHIDEExplorerForm</Form>
         </DCCReference>
         <DCCReference Include="Source\IDEExplorer.Wizard.pas"/>
-        <DCCReference Include="Source\DGHOLDRTTIFunctions.pas"/>
-        <DCCReference Include="Source\DGHRTTIFunctions.pas"/>
+        <DCCReference Include="Source\IDEExplorer.OLDRTTIFunctions.pas"/>
+        <DCCReference Include="Source\IDEExplorer.RTTIFunctions.pas"/>
         <DCCReference Include="Source\IDEExplorer.SplashScreen.pas"/>
         <DCCReference Include="Source\IDEExplorer.Functions.pas"/>
         <DCCReference Include="Source\IDEExplorer.Types.pas"/>
