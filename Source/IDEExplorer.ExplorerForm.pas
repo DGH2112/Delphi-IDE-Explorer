@@ -24,8 +24,7 @@ Uses
   Dialogs,
   ComCtrls,
   ExtCtrls,
-  ImgList,
-  System.ImageList;
+  ImgList;
 
 {$INCLUDE CompilerDefinitions.inc}
 

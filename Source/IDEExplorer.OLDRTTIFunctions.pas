@@ -11,6 +11,8 @@ Unit IDEExplorer.OLDRTTIFunctions;
 
 Interface
 
+{$INCLUDE CompilerDefinitions.inc}
+
 Uses
   TypInfo,
   ComCtrls;
@@ -96,7 +98,7 @@ Begin
           lvItem.ImageIndex := Integer(PropList[i].PropType^.Kind);
           lvItem.SubItems.Add(GetEnumName(TypeInfo(TTypeKind),
             Ord(PropList[i].PropType^.Kind)));
-          If Not FatalValue(PropList[i].Name) Then
+          If Not FatalValue(UTF8ToString(PropList[i].Name)) Then
             Case PropList[i].PropType^.Kind Of
               tkUnknown:     lvItem.SubItems.Add(strUnknown);
               tkInteger:     lvItem.SubItems.Add(PropertyValueInteger(ptrData, PropList[i]));
@@ -116,7 +118,11 @@ Begin
               tkInterface:   lvItem.SubItems.Add(strInteface {GetInterfaceProp(TObject(ptrData), PropList[i])});
               tkInt64:       lvItem.SubItems.Add(IntToStr(GetInt64Prop(TObject(ptrData), PropList[i])));
               tkDynArray:    lvItem.SubItems.Add(Format('%x', [GetDynArrayProp(TObject(ptrData), PropList[i])]));
+              {$IFDEF DXE102}
+              tkUString:     lvItem.SubItems.Add(GetStrProp(TObject(ptrData), PropList[i]));
+              {$ELSE}
               tkUString:     lvItem.SubItems.Add(GetUnicodeStrProp(TObject(ptrData), PropList[i]));
+              {$ENDIF}
               tkClassRef:    lvItem.SubItems.Add(strClassRef);
               tkPointer:     lvItem.SubItems.Add(strPointer);
               tkProcedure:   lvItem.SubItems.Add(strProcedure);
