@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    25 Nov 2018
+  @Date    30 Nov 2018
   
 **)
 Unit IDEExplorer.AboutBox;
@@ -66,7 +66,7 @@ Begin
       ]),
       strExpertsDescription,
       bmAboutBox,
-      False,
+      {$IFDEF DEBUG} True {$ELSE} False {$ENDIF},
       Format(strSplashScreenBuild, [
         VersionInfo.iMajor, 
         VersionInfo.iMinor, 

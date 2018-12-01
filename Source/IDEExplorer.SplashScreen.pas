@@ -4,7 +4,7 @@
 
   @Author  David Hoyle
   @Version 1.0
-  @Date    25 Nov 2018
+  @Date    30 Nov 2018
   
 **)
 Unit IDEExplorer.SplashScreen;
@@ -60,7 +60,7 @@ Begin
           Application.Title
         ]),
         bmSplashScreen,
-        False,
+        {$IFDEF DEBUG} True {$ELSE} False {$ENDIF},
         Format(strSplashScreenBuild, [
           VersionInfo.iMajor, 
           VersionInfo.iMinor, 
