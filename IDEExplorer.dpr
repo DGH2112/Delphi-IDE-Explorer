@@ -19,8 +19,8 @@ Library IDEExplorer;
 {$INCLUDE 'Source\LibrarySuffixes.inc'}
 
 uses
-  System.SysUtils,
-  System.Classes,
+  SysUtils,
+  Classes,
   IDEExplorer.ExplorerForm in 'Source\IDEExplorer.ExplorerForm.pas' {DGHIDEExplorerForm},
   IDEExplorer.Wizard in 'Source\IDEExplorer.Wizard.pas',
   IDEExplorer.OLDRTTIFunctions in 'Source\IDEExplorer.OLDRTTIFunctions.pas',
