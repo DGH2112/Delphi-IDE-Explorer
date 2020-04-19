@@ -1,0 +1,3 @@
+[submodule "Virtualtrees"]
+	path = Virtualtrees
+	url = https://github.com/DGH2112/Virtual-Treeview-6.5.0-IDE
