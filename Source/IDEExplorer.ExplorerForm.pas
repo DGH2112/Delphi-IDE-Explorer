@@ -2,8 +2,8 @@
 
   This module contains the explorer form interface.
 
-  @Date    01 Dec 2018
-  @Version 2.0
+  @Date    19 Apr 2020
+  @Version 2.003
   @Author  David Hoyle
 
   @todo    Add a progress bar
@@ -294,21 +294,21 @@ Class Procedure TDGHIDEExplorerForm.Execute;
 
 Var
   F : TDGHIDEExplorerForm;
-  { $IFDEF DXE102
+  {$IFDEF DXE102}
   ITS : IOTAIDEThemingServices250;
-  $ENDIF}
+  {$ENDIF}
   
 Begin
   F := TDGHIDEExplorerForm.Create(Application.MainForm);
   Try
-    { $IFDEF DXE102
-    If Supports(BorlandIDEServices, IOTAIDEThemingServices, ITS) Then
+    {$IFDEF DXE102}
+    If Supports(BorlandIDEServices, IOTAIDEThemingServices250, ITS) Then
       If ITS.IDEThemingEnabled Then
         Begin
           ITS.RegisterFormClass(TDGHIDEExplorerForm);
           ITS.ApplyTheme(F);
         End;
-    $ENDIF}
+    {$ENDIF}
     F.ShowModal;
   Finally
     F.Free;
