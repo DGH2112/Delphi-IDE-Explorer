@@ -3,8 +3,8 @@
   This module contains a Delphi IDE wizard that displays a tree view of the
   Delphi IDEs published interface.
 
-  @Date    01 Dec 2018
-  @Version 2.0
+  @Date    19 Apr 2020
+  @Version 2.077
   @Author  David Hoyle
 
 **)
@@ -49,6 +49,9 @@ Exports
 Implementation
 
 Uses
+  {$IFDEF DEBUG}
+  CodeSiteLogging,
+  {$ENDIF DEBUG}
   SysUtils,
   Forms,
   IDEExplorer.SplashScreen,
@@ -80,6 +83,7 @@ Function InitWizard(Const BorlandIDEServices : IBorlandIDEServices;
   var Terminate: TWizardTerminateProc) : Boolean; StdCall; //FI:O804
 
 Begin
+  { $IFDEF CODESITE}CodeSite.TraceMethod('InitWizard', tmoTiming);{ $ENDIF}
   Result := Assigned(BorlandIDEServices);
   If Result Then
     RegisterProc(TDGHIDEExplorer.Create);
@@ -97,6 +101,7 @@ End;
 Procedure Register;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod('Register', tmoTiming);{$ENDIF}
   RegisterPackageWizard(TDGHIDEExplorer.Create);
 End;
 
@@ -113,6 +118,7 @@ End;
 Constructor TDGHIDEExplorer.Create;
 
 Begin
+  { $IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{ $ENDIF}
   Inherited Create;
   InstallSplashScreen;
   FAboutBoxIndex := AddAboutBoxEntry;
@@ -129,6 +135,7 @@ End;
 Destructor TDGHIDEExplorer.Destroy;
 
 Begin
+  { $IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{ $ENDIF}
   RemoveAboutBoxEntry(FAboutBoxIndex);
   Inherited Destroy;
 End;
@@ -144,6 +151,7 @@ End;
 Procedure TDGHIDEExplorer.Execute;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Execute', tmoTiming);{$ENDIF}
   TDGHIDEExplorerForm.Execute;
 End;
 
@@ -163,6 +171,7 @@ Const
   strDGHIDEExplorer = '.DGH IDE Explorer';
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'GetIDString', tmoTiming);{$ENDIF}
   Result := strDGHIDEExplorer;
 End;
 
@@ -182,6 +191,7 @@ ResourceString
   strIDEExplorer = 'IDE Explorer';
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'GetMenuText', tmoTiming);{$ENDIF}
   Result := strIDEExplorer;
 End;
 
@@ -201,6 +211,7 @@ Const
   strDGHIDEExplorer = 'DGH IDE Explorer';
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'GetName', tmoTiming);{$ENDIF}
   Result := strDGHIDEExplorer;
 End;
 
@@ -217,7 +228,9 @@ End;
 Function TDGHIDEExplorer.GetState: TWizardState;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'GetState', tmoTiming);{$ENDIF}
   Result := [wsEnabled];
 End;
 
 End.
+

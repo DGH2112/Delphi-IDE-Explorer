@@ -4,8 +4,8 @@
   properties and events for various objects pass to the single routine below.
 
   @Author  David Hoyle
-  @Version 2.0
-  @Date    01 Dec 2018
+  @Version 2.055
+  @Date    19 Apr 2020
 
 **)
 Unit IDEExplorer.RTTIFunctions;
@@ -15,7 +15,8 @@ Interface
 Uses
   RTTI,
   ComCtrls,
-  Classes;
+  Classes,
+  IDEEXplorer.Interfaces;
 
 Type
   (** A record to encapsulate the new RTTi methods. **)
@@ -38,7 +39,7 @@ Type
   Const V : TValue); Static;
   Public
     Class Procedure ProcessObject(Const C : TObject; Const FieldView, MethodView, PropertyView,
-    EventView : TListView); Static;
+    EventView : TListView; Const ProgressMgr : IDIEProgressMgr); Static;
     Class Procedure ProcessClass(Const tvTree : TTreeView; Const ParentNode : TTreeNode;
       Const C : TObject); Static;
   End; 
@@ -173,10 +174,17 @@ End;
   @param   MethodView   as a TListView as a constant
   @param   PropertyView as a TListView as a constant
   @param   EventView    as a TListView as a constant
+  @param   ProgressMgr  as an IDIEProgressMgr as a constant
 
 **)
 Class Procedure TIDEExplorerNEWRTTI.ProcessObject(Const C : TObject; Const FieldView, MethodView,
-  PropertyView, EventView : TListView);
+  PropertyView, EventView : TListView; Const ProgressMgr : IDIEProgressMgr);
+
+ResourceString
+  strFindingFields = 'Finding Fields...';
+  strFindingMethods = 'Finding Methods...';
+  strFindingProperties = 'Finding Properties...';
+  strFindingEvents = 'Finding Events...';
 
 Var
   Ctx  : TRTTIContext;
@@ -184,9 +192,13 @@ Var
 Begin
   Ctx := TRttiContext.Create;
   Try
+    ProgressMgr.Update(strFindingFields);
     ProcessRTTIFields(C, Ctx, FieldView);
+    ProgressMgr.Update(strFindingMethods);
     ProcessRTTIMethods(C, Ctx, MethodView);
+    ProgressMgr.Update(strFindingProperties);
     ProcessRTTIProperties(C, Ctx, PropertyView);
+    ProgressMgr.Update(strFindingEvents);
     ProcessRTTIEvents(C, Ctx, EventView);
   Finally
     Ctx.Free;

@@ -4,8 +4,8 @@
   IDE forms and components.
 
   @Author  David Hoyle
-  @Version 1.0
-  @Date    01 Dec 2018
+  @Version 1.009
+  @Date    19 Apr 2020
 
   @nocheck EmptyBeginEnd
   
@@ -30,7 +30,10 @@ uses
   IDEExplorer.Types in 'Source\IDEExplorer.Types.pas',
   IDEExplorer.ResourceStrings in 'Source\IDEExplorer.ResourceStrings.pas',
   IDEExplorer.Constants in 'Source\IDEExplorer.Constants.pas',
-  IDEExplorer.AboutBox in 'Source\IDEExplorer.AboutBox.pas';
+  IDEExplorer.AboutBox in 'Source\IDEExplorer.AboutBox.pas',
+  IDEExplorer.Interfaces in 'Source\IDEExplorer.Interfaces.pas',
+  IDEExplorer.ProgressMgr in 'Source\IDEExplorer.ProgressMgr.pas',
+  IDEExplorer.ProgressForm in 'Source\IDEExplorer.ProgressForm.pas' {frmDIEProgressForm};
 
 {$R *.res}
 

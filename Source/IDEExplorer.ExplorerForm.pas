@@ -3,10 +3,12 @@
   This module contains the explorer form interface.
 
   @Date    19 Apr 2020
-  @Version 2.003
+  @Version 2.340
   @Author  David Hoyle
 
-  @todo    Add a progress bar
+  @done    Add a progress bar
+  @todo    Add a filter for the treeview.
+  @todo    Add a filter for the fileds, methods, proeprties, etc.
 
 **)
 Unit IDEExplorer.ExplorerForm;
@@ -24,7 +26,9 @@ Uses
   Dialogs,
   ComCtrls,
   ExtCtrls,
-  ImgList;
+  ImgList,
+  System.ImageList,
+  IDEExplorer.Interfaces;
 
 {$INCLUDE CompilerDefinitions.inc}
 
@@ -55,12 +59,13 @@ Type
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
   Strict Private
+    FProgressMgr : IDIEProgressMgr;
+  Strict Protected
     Procedure GetComponents(Const Node: TTreeNode; Const Component: TComponent);
     Procedure LoadSettings;
     Procedure SaveSettings;
     Procedure BuildComponentHeritage(Const Node : TTreeNode);
     Procedure BuildParentHeritage(Const Node : TTreeNode);
-  Strict Protected
   Public
     Class Procedure Execute;
   End;
@@ -71,10 +76,14 @@ Implementation
 
 
 Uses
+  {$IFDEF DEBUG}
+  CodeSiteLogging,
+  {$ENDIF DEBUG}
   ToolsAPI,
   Registry,
   IDEExplorer.RTTIFunctions,
-  IDEExplorer.OLDRTTIFunctions;
+  IDEExplorer.OLDRTTIFunctions,
+  IDEExplorer.ProgressMgr;
 
 Type
   (** An enumerate to define the tree images. **)
@@ -118,6 +127,7 @@ Var
   i: Integer;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'BuildComponentHeritage', tmoTiming);{$ENDIF}
   tvHierarchies.Items.BeginUpdate;
   Try
     If (Node <> Nil) And (Node.Data <> Nil) Then
@@ -179,6 +189,7 @@ Procedure TDGHIDEExplorerForm.BuildFormComponentTree(Sender: TObject);
     Item: TTreeNode;
 
   Begin
+    {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'BuildFormComponentTree/IterateForms', tmoTiming);{$ENDIF}
     Item := tvComponentTree.Items.AddChildObject(ParentNode, ScreenForm.Name + ' : ' +
       ScreenForm.ClassName, ScreenForm);
     Item.ImageIndex := Integer(eTreeImage);
@@ -193,6 +204,15 @@ ResourceString
   strForms = 'Forms';
   strCustomForms = 'CustomForms';
   strDataModules = 'DataModules';
+  strGettingAppicationClasses = 'Getting Appication Classes...';
+  strGettingScreenClasses = 'Getting Screen Classes...';
+  strIteratingScreenForms = 'Iterating Screen Forms...';
+  strIteratingScreenCustomForms = 'Iterating Screen Custom Forms...';
+  strIteratingScreenDataModules = 'Iterating Screen Data Modules...';
+  strExpandingAndSorting = 'Expanding and Sorting...';
+
+Const
+  iProgressSteps = 6;
 
 Var
   i: Integer;
@@ -201,33 +221,45 @@ Var
   N: TTreeNode;
 
 Begin
-  tvComponentTree.Items.BeginUpdate;
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'BuildFormComponentTree', tmoTiming);{$ENDIF}
+  FProgressMgr.Initialise(iProgressSteps);
   Try
-    FoundClasses.Clear;
-    nApplication := tvComponentTree.Items.AddChildObject(Nil, strApplication, Application);
-    TIDEExplorerNEWRTTI.ProcessClass(tvComponentTree, nApplication, Application);
-    nScreen := tvComponentTree.Items.AddChildObject(Nil, strScreen, Screen);
-    TIDEExplorerNEWRTTI.ProcessClass(tvComponentTree, nScreen, Screen);
-    N := tvComponentTree.Items.AddChild(nScreen, strForms);
-    N.ImageIndex := Integer(tiForms);
-    N.SelectedIndex := Integer(tiForms);
-    For i := 0 To Screen.FormCount - 1 Do
-      IterateForms(N, Screen.Forms[i], tiForm);
-    N := tvComponentTree.Items.AddChild(nScreen, strCustomForms);
-    N.ImageIndex := Integer(tiForms);
-    N.SelectedIndex := Integer(tiForms);
-    For i := 0 To Screen.CustomFormCount - 1 Do
-      IterateForms(N, Screen.CustomForms[i], tiForm);
-    N := tvComponentTree.Items.AddChild(nScreen, strDataModules);
-    N.ImageIndex := Integer(tiDataModules);
-    N.SelectedIndex := Integer(tiDataModules);
-    For i := 0 To Screen.DataModuleCount - 1 Do
-      IterateForms(N, Screen.DataModules[i], tiDataModule);
-    nApplication.Expand(False);
-    nScreen.Expand(False);
-    tvComponentTree.AlphaSort(True);
+    tvComponentTree.Items.BeginUpdate;
+    Try
+      FProgressMgr.Show(strGettingAppicationClasses);
+      FoundClasses.Clear;
+      nApplication := tvComponentTree.Items.AddChildObject(Nil, strApplication, Application);
+      TIDEExplorerNEWRTTI.ProcessClass(tvComponentTree, nApplication, Application);
+      FProgressMgr.Update(strGettingScreenClasses);
+      nScreen := tvComponentTree.Items.AddChildObject(Nil, strScreen, Screen);
+      TIDEExplorerNEWRTTI.ProcessClass(tvComponentTree, nScreen, Screen);
+      FProgressMgr.Update(strIteratingScreenForms);
+      N := tvComponentTree.Items.AddChild(nScreen, strForms);
+      N.ImageIndex := Integer(tiForms);
+      N.SelectedIndex := Integer(tiForms);
+      For i := 0 To Screen.FormCount - 1 Do
+        IterateForms(N, Screen.Forms[i], tiForm);
+      FProgressMgr.Update(strIteratingScreenCustomForms);
+      N := tvComponentTree.Items.AddChild(nScreen, strCustomForms);
+      N.ImageIndex := Integer(tiForms);
+      N.SelectedIndex := Integer(tiForms);
+      For i := 0 To Screen.CustomFormCount - 1 Do
+        IterateForms(N, Screen.CustomForms[i], tiForm);
+      FProgressMgr.Update(strIteratingScreenDataModules);
+      N := tvComponentTree.Items.AddChild(nScreen, strDataModules);
+      N.ImageIndex := Integer(tiDataModules);
+      N.SelectedIndex := Integer(tiDataModules);
+      For i := 0 To Screen.DataModuleCount - 1 Do
+        IterateForms(N, Screen.DataModules[i], tiDataModule);
+      FProgressMgr.Update(strExpandingAndSorting);
+      nApplication.Expand(False);
+      nScreen.Expand(False);
+      tvComponentTree.AlphaSort(True);
+    Finally
+      tvComponentTree.Items.EndUpdate;
+    End;
   Finally
-    tvComponentTree.Items.EndUpdate;
+    FProgressMgr.Hide;
   End;
 End;
 
@@ -253,6 +285,7 @@ Var
   i: Integer;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'BuildParentHeritage', tmoTiming);{$ENDIF}
   tvHierarchies.Items.BeginUpdate;
   Try
     If (Node <> Nil) And (Node.Data <> Nil) And (TObject(Node.Data) Is TWinControl) Then
@@ -299,6 +332,7 @@ Var
   {$ENDIF}
   
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod('TDGHIDEExplorerForm.Execute', tmoTiming);{$ENDIF}
   F := TDGHIDEExplorerForm.Create(Application.MainForm);
   Try
     {$IFDEF DXE102}
@@ -328,7 +362,9 @@ End;
 Procedure TDGHIDEExplorerForm.FormCreate(Sender: TObject);
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'FormCreate', tmoTiming);{$ENDIF}
   LoadSettings;
+  FProgressMgr := TDIEProgressMgr.Create(Self);
 End;
 
 (**
@@ -344,6 +380,7 @@ End;
 Procedure TDGHIDEExplorerForm.FormDestroy(Sender: TObject);
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'FormDestroy', tmoTiming);{$ENDIF}
   SaveSettings;
 End;
 
@@ -362,6 +399,7 @@ End;
 Procedure TDGHIDEExplorerForm.FormShow(Sender: TObject);
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'FormShow', tmoTiming);{$ENDIF}
   BuildFormComponentTree(Sender);
   pgcPropertiesMethodsAndEvents.ActivePageIndex := 0;
 End;
@@ -384,6 +422,7 @@ Var
   NewNode: TTreeNode;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'GetComponents', tmoTiming);{$ENDIF}
   For i := 0 To Component.ComponentCount - 1 Do
     Begin
       NewNode := tvComponentTree.Items.AddChild(Node, Component.Components[i].Name + ' : ' +
@@ -417,6 +456,7 @@ Var
   R: TRegIniFile;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'LoadSettings', tmoTiming);{$ENDIF}
   R := TRegIniFile.Create(RegKey);
   Try
     Self.Top := R.ReadInteger(SectionName, strTopKey, (Application.MainForm.Height - Height) Div iHalf);
@@ -452,6 +492,7 @@ Var
   R: TRegIniFile;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'SaveSettings', tmoTiming);{$ENDIF}
   R := TRegIniFile.Create(RegKey);
   Try
     R.WriteInteger(SectionName, strTopKey, Self.Top);
@@ -486,21 +527,41 @@ End;
 **)
 Procedure TDGHIDEExplorerForm.tvComponentTreeChange(Sender: TObject; Node: TTreeNode);
 
+ResourceString
+  strClearingExistingData = 'Clearing existing data...';
+  strFindingOLDProperties = 'Finding OLD properties...';
+  strBuildingHierarachies = 'Building Hierarachies...';
+
+Const
+  iProgressSteps = 6;
+
 Begin
-  lvFields.Clear;
-  lvMethods.Clear;
-  lvProperties.Clear;
-  lvEvents.Clear;
-  lvOldProperties.Clear;
-  If (Node <> Nil) And (Node.Data <> Nil) Then
-    Begin
-      TIDEExplorerNEWRTTI.ProcessObject(Node.Data, lvFields, lvMethods, lvProperties, lvEvents);
-      TIDEExplorerOLDRTTI.ProcessOldProperties(lvOldProperties, Node.Data);
-    End;
-  tvHierarchies.Items.Clear;
-  BuildComponentHeritage(Node);
-  BuildParentHeritage(Node);
-  tvHierarchies.FullExpand;
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'tvComponentTreeChange', tmoTiming);{$ENDIF}
+  FProgressMgr.Initialise(iProgressSteps);
+  Try
+    FProgressMgr.Show(strClearingExistingData);
+    lvFields.Clear;
+    lvMethods.Clear;
+    lvProperties.Clear;
+    lvEvents.Clear;
+    lvOldProperties.Clear;
+    If (Node <> Nil) And (Node.Data <> Nil) Then
+      Begin
+        TIDEExplorerNEWRTTI.ProcessObject(Node.Data, lvFields, lvMethods, lvProperties, lvEvents,
+          FProgressMgr);
+        FProgressMgr.Update(strFindingOLDProperties);
+        TIDEExplorerOLDRTTI.ProcessOldProperties(lvOldProperties, Node.Data);
+      End;
+    FProgressMgr.Update(strBuildingHierarachies);
+    tvHierarchies.Items.Clear;
+    BuildComponentHeritage(Node);
+    BuildParentHeritage(Node);
+    tvHierarchies.FullExpand;
+  Finally
+    FProgressMgr.Hide;
+  End;
 End;
 
 End.
+
+
