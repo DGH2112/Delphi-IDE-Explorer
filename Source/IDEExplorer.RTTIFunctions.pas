@@ -4,7 +4,7 @@
   properties and events for various objects pass to the single routine below.
 
   @Author  David Hoyle
-  @Version 2.055
+  @Version 2.144
   @Date    19 Apr 2020
 
 **)
@@ -15,6 +15,7 @@ Interface
 Uses
   RTTI,
   ComCtrls,
+  VirtualTrees,
   Classes,
   IDEEXplorer.Interfaces;
 
@@ -35,13 +36,16 @@ Type
     Class Procedure ProcessValue(Const Item : TListItem; Const Value : TValue;
       Const strType : String); Static;
     Class Function ValueToString(Const Value : TValue) : String; Static;
-    Class Procedure ProcessCoreClass(Const tvTree : TTreeView; Const N : TTreeNode;
-  Const V : TValue); Static;
+    Class Procedure ProcessCoreClass(Const vstComponents : TVirtualStringTree; Const N : PVirtualNode;
+      Const V : TValue); Static;
   Public
     Class Procedure ProcessObject(Const C : TObject; Const FieldView, MethodView, PropertyView,
-    EventView : TListView; Const ProgressMgr : IDIEProgressMgr); Static;
-    Class Procedure ProcessClass(Const tvTree : TTreeView; Const ParentNode : TTreeNode;
-      Const C : TObject); Static;
+      EventView : TListView; Const ProgressMgr : IDIEProgressMgr); Static;
+    Class Procedure ProcessClass(
+      Const vstComponents : TVirtualStringTree;
+      Const ParentNode : PVirtualNode;
+      Const C : TObject
+    ); Static;
   End; 
 
 Var
@@ -61,7 +65,7 @@ Uses
   Graphics,
   Controls,
   Windows,
-  IDEExplorer.Functions;
+  IDEExplorer.Functions, IDEExplorer.Types;
 
 ResourceString
   (** A resource string for RTTI Exceptions. **)
@@ -82,18 +86,21 @@ Const
   @postcon Iterates through the classes subclasses adding them to the tree and then asking those classes
            for their sub-classes.
 
-  @BUG     Using this code on the IDE (RAD Studio 10 Seattle) causes catastrophic failures: It is 
+  @bug     Using this code on the IDE (RAD Studio 10 Seattle) causes catastrophic failures: It is 
            assumed that when TValue extracts the value of an item it inadvertantly changes some of 
            those objects which cause various AV and a divide by zero error. DO NOT IMPLEMENT THIS 
            UNTIL THE REASONS FOR THE FAILURES ARE UNDERSTOOD OTHERWISE YOU WILL CRASH YOUR IDE.
 
-  @param   tvTree     as a TTreeView as a constant
-  @param   ParentNode as a TTreeNode as a constant
-  @param   C          as a TObject as a constant
+  @param   vstComponents as a TVirtualStringTree as a constant
+  @param   ParentNode    as a PVirtualNode as a constant
+  @param   C             as a TObject as a constant
 
 **)
-Class Procedure TIDEExplorerNEWRTTI.ProcessClass(Const tvTree : TTreeView; Const ParentNode : TTreeNode;
-  Const C : TObject);
+Class Procedure TIDEExplorerNEWRTTI.ProcessClass(
+                  Const vstComponents : TVirtualStringTree;
+                  Const ParentNode : PVirtualNode;
+                  Const C : TObject
+                );
 
 Var
   Ctx : TRttiContext;
@@ -101,7 +108,8 @@ Var
   F   : TRttiField;
   P   : TRttiProperty;
   V   : TValue;
-  N   : TTreeNode;
+  N   : PVirtualNode;
+  NodeData : PDIEObjectData;
 
 Begin
   Exit;
@@ -115,18 +123,32 @@ Begin
         If F.FieldType.TypeKind = tkClass Then
           Begin
             V := F.GetValue(C);
-            N := tvTree.Items.AddChildObject(ParentNode, F.Parent.Name + '.' + F.Name + ' : ' +
-              F.FieldType.ToString + ' ' + ValueToString(V), V.AsObject);
-            ProcessCoreClass(tvTree, N, V);
+            N := vstComponents.AddChild(ParentNode);
+            NodeData := vstComponents.GetNodeData(N);
+            NodeData.FText := Format('%s.%s: %s %s', [
+              F.Parent.Name,F.Name,
+              F.FieldType.ToString,
+              ValueToString(V)
+            ]);
+            NodeData.FImageIndex := -1; //: @debug What to do with this.
+            NodeData.FObject := V.AsObject;
+            ProcessCoreClass(vstComponents, N, V);
           End;
       End;
     For P In T.GetProperties Do
       If P.PropertyType.TypeKind = tkClass Then
         Begin
           V := P.GetValue(C);
-          N := tvTree.Items.AddChildObject(ParentNode, P.Parent.Name + '.' + P.Name + ' : ' +
-            P.PropertyType.ToString + ' ' + ValueToString(V), V.AsObject);
-          ProcessCoreClass(tvTree, N, V);
+          N := vstComponents.AddChild(ParentNode);
+          NodeData := vstComponents.GetNodeData(N);
+          NodeData.FText := Format('%s.%s: %s %s', [
+            P.Parent.Name,
+            P.Name,
+            P.PropertyType.ToString,
+            ValueToString(V)
+          ]);
+          NodeData.FObject := V.AsObject;
+          ProcessCoreClass(vstComponents, N, V);
         End;
   Finally
     Ctx.Free;
@@ -147,8 +169,11 @@ End;
   @param   V      as a TValue as a constant
 
 **)
-Class Procedure TIDEExplorerNEWRTTI.ProcessCoreClass(Const tvTree : TTreeView; Const N : TTreeNode;
-  Const V : TValue);
+Class Procedure TIDEExplorerNEWRTTI.ProcessCoreClass(
+                  Const vstComponents : TVirtualStringTree;
+                  Const N : PVirtualNode;
+                  Const V : TValue
+                );
 
 Var
   iIndex: Integer;
@@ -158,7 +183,7 @@ Begin
     Begin
       iIndex := FoundClasses.IndexOf(V.AsObject);
       If iIndex = -1 Then
-        ProcessClass(tvTree, N, V.AsObject);
+        ProcessClass(vstComponents, N, V.AsObject);
     End;
 End;
 
