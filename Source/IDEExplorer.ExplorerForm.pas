@@ -3,7 +3,7 @@
   This module contains the explorer form interface.
 
   @Date    19 Apr 2020
-  @Version 3.377
+  @Version 3.383
   @Author  David Hoyle
 
   @done    Add a progress bar
@@ -139,6 +139,7 @@ Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'BuildComponentHeritage', tmoTiming);{$ENDIF}
   tvHierarchies.Items.BeginUpdate;
   Try
+    tvHierarchies.Items.Clear;
     If Assigned(Node) Then
       Begin
         NodeData := vstComponentTree.GetNodeData(Node);
@@ -633,7 +634,6 @@ Begin
           End;
       End;
     FProgressMgr.Update(strBuildingHierarachies);
-    tvHierarchies.Items.Clear;
     BuildComponentHeritage(Node);
     BuildParentHeritage(Node);
     tvHierarchies.FullExpand;
