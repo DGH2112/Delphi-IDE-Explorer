@@ -1,8 +1,8 @@
 LANGUAGE LANG_ENGLISH,SUBLANG_ENGLISH_US
 
 1 VERSIONINFO LOADONCALL MOVEABLE DISCARDABLE IMPURE
-FILEVERSION 2, 0, 2, 625
-PRODUCTVERSION 2, 0, 2, 625
+FILEVERSION 2, 0, 2, 637
+PRODUCTVERSION 2, 0, 2, 637
 FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
 FILEOS VOS__WINDOWS32
 FILETYPE VFT_APP
@@ -13,7 +13,7 @@ FILETYPE VFT_APP
     {
       VALUE "CompanyName", "Season's Fall Music\000"
       VALUE "FileDescription", "IDEExplorer: A package to allow you to browser the internal fields, properties, methods and events of the IDE\000"
-      VALUE "FileVersion", "2.0.2.625\000"
+      VALUE "FileVersion", "2.0.2.637\000"
       VALUE "InternalName", "IDEExplorer\000"
       VALUE "LegalCopyright", "Season's Fall Music\000"
       VALUE "LegalTrademarks", "Season's Fall Music\000"

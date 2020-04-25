@@ -30,59 +30,72 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
     Top = 0
     Width = 636
     Height = 479
-    ActivePage = TabSheet2
+    ActivePage = tabFields
     Align = alClient
-    TabOrder = 0
+    TabOrder = 1
     object tabFields: TTabSheet
       Caption = '&Fields'
       ImageIndex = 3
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
-      object lvFields: TListView
+      object vstFields: TVirtualStringTree
         Left = 0
         Top = 0
         Width = 628
         Height = 448
         Align = alClient
+        Header.AutoSizeIndex = 0
+        Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible]
+        HintMode = hmTooltip
+        Images = ilScope
+        ParentShowHint = False
+        ShowHint = True
+        StateImages = ilTypeKindImages
+        TabOrder = 0
+        TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+        TreeOptions.SelectionOptions = [toFullRowSelect]
+        OnFreeNode = vstFieldsFreeNode
+        OnGetText = vstFieldsGetText
+        OnGetImageIndex = vstFieldsGetImageIndex
         Columns = <
           item
-            Caption = 'Scope'
+            Position = 0
+            Width = 100
+            WideText = 'Scope'
           end
           item
-            Caption = 'Qualified Name'
+            Position = 1
+            Width = 100
+            WideText = 'Qualified Name'
           end
           item
-            Caption = 'Type'
+            Position = 2
+            Width = 100
+            WideText = 'Type'
           end
           item
-            Caption = 'Offset'
+            Position = 3
+            Width = 100
+            WideText = 'Offset'
           end
           item
-            Caption = 'Kind'
+            Position = 4
+            Width = 100
+            WideText = 'Kind'
           end
           item
-            Caption = 'Size'
+            Position = 5
+            Width = 100
+            WideText = 'Size'
           end
           item
-            Caption = 'Value'
+            Position = 6
+            Width = 100
+            WideText = 'Value'
           end>
-        ReadOnly = True
-        RowSelect = True
-        SmallImages = ilTypeKindImages
-        StateImages = ilScope
-        TabOrder = 0
-        ViewStyle = vsReport
       end
     end
     object tabMethods: TTabSheet
       Caption = '&Methods'
       ImageIndex = 5
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object lvMethods: TListView
         Left = 0
         Top = 0
@@ -113,10 +126,6 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
     object tabNewProperties: TTabSheet
       Caption = '&Properties'
       ImageIndex = 2
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object lvProperties: TListView
         Left = 0
         Top = 0
@@ -156,10 +165,6 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
     object tabEvents: TTabSheet
       Caption = '&Events'
       ImageIndex = 4
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object lvEvents: TListView
         Left = 0
         Top = 0
@@ -212,10 +217,6 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
     end
     object TabSheet1: TTabSheet
       Caption = '&Old Properties'
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 0
-      ExplicitHeight = 0
       object lvOldProperties: TListView
         Left = 0
         Top = 0
@@ -255,7 +256,7 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
     Height = 479
     Align = alLeft
     BevelOuter = bvNone
-    TabOrder = 1
+    TabOrder = 0
     object vstComponentTree: TVirtualStringTree
       Left = 0
       Top = 24
@@ -265,7 +266,7 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
       Header.AutoSizeIndex = 0
       Header.MainColumn = -1
       Images = ilTreeImages
-      TabOrder = 0
+      TabOrder = 1
       TreeOptions.SelectionOptions = [toFullRowSelect]
       OnCompareNodes = vstComponentTreeCompareNodes
       OnFocusChanged = vstComponentTreeFocusChanged
@@ -280,7 +281,7 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
       Width = 185
       Height = 24
       Align = alTop
-      TabOrder = 1
+      TabOrder = 0
       OnChange = edtComponentFilterChange
     end
   end

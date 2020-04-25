@@ -3,7 +3,7 @@
   This module contains the explorer form interface.
 
   @Date    25 Apr 2020
-  @Version 3.853
+  @Version 4.210
   @Author  David Hoyle
 
   @done    Add a progress bar
@@ -28,7 +28,9 @@ Uses
   ExtCtrls,
   ImgList,
   System.ImageList,
-  IDEExplorer.Interfaces, VirtualTrees, Vcl.StdCtrls;
+  Vcl.StdCtrls,
+  VirtualTrees,
+  IDEExplorer.Interfaces;
 
 {$INCLUDE CompilerDefinitions.inc}
 
@@ -46,7 +48,6 @@ Type
     tabNewProperties: TTabSheet;
     lvProperties: TListView;
     tabFields: TTabSheet;
-    lvFields: TListView;
     tabEvents: TTabSheet;
     lvEvents: TListView;
     tabMethods: TTabSheet;
@@ -56,6 +57,7 @@ Type
     pnlTreePanel: TPanel;
     edtComponentFilter: TEdit;
     tmFilterTimer: TTimer;
+    vstFields: TVirtualStringTree;
     Procedure BuildFormComponentTree(Sender: TObject);
     procedure edtComponentFilterChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -71,6 +73,11 @@ Type
       Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: TImageIndex);
     procedure vstComponentTreeGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
       TextType: TVSTTextType; var CellText: string);
+    procedure vstFieldsFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure vstFieldsGetImageIndex(Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind;
+      Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: TImageIndex);
+    procedure vstFieldsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType:
+      TVSTTextType; var CellText: string);
   Strict Private
     FProgressMgr               : IDIEProgressMgr;
     FLastComponentFilterUpdate : Cardinal;
@@ -487,6 +494,7 @@ Begin
   LoadSettings;
   FProgressMgr := TDIEProgressMgr.Create(Self);
   vstComponentTree.NodeDataSize := SizeOf(TDIEObjectData);
+  vstFields.NodeDataSize := SizeOf(TDIEFieldData);
 End;
 
 (**
@@ -581,6 +589,7 @@ Var
   lv: TListView;
   j: Integer;
   R: TRegIniFile;
+  VST: TVirtualStringTree;
 
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'LoadSettings', tmoTiming);{$ENDIF}
@@ -591,13 +600,24 @@ Begin
     Self.Width := R.ReadInteger(SectionName, strWidthKey, Width);
     Self.Height := R.ReadInteger(SectionName, strHeightKey, Height);
     pnlTreePanel.Width := R.ReadInteger(SectionName, strTreeWidthKey, Width Div iQuarter);
-    For i := 0 To ComponentCount - 1 Do
+    For i := 0 To ComponentCount - 1 Do BEGIN
       If Components[i] Is TListView Then
         Begin
           lv := Components[i] As TListView;
           For j := 0 To lv.Columns.Count - 1 Do
             lv.Columns[j].Width := R.ReadInteger(lv.Name, lv.Column[j].Caption, iDefaultColumnWidth);
         End;
+      If Components[i] Is TVirtualStringTree Then
+        Begin
+          VST := Components[i] As TVirtualStringTree;
+          For j := 0 To VST.Header.Columns.Count - 1 Do
+            VST.Header.Columns[j].Width := R.ReadInteger(
+              VST.Name,
+              VST.Header.Columns[j].Text, 
+              iDefaultColumnWidth
+            );
+        End;
+    END;
   Finally
     R.Free;
   End;
@@ -617,6 +637,7 @@ Var
   i, j : Integer;
   lv : TListView;
   R: TRegIniFile;
+  VST: TVirtualStringTree;
 
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'SaveSettings', tmoTiming);{$ENDIF}
@@ -627,13 +648,20 @@ Begin
     R.WriteInteger(SectionName, strWidthKey, Self.Width);
     R.WriteInteger(SectionName, strHeightKey, Self.Height);
     R.WriteInteger(SectionName, strTreeWidthKey, pnlTreePanel.Width);
-    For i := 0 To ComponentCount - 1 Do
+    For i := 0 To ComponentCount - 1 Do BEGIN
       If Components[i] Is TListView Then
         Begin
           lv := Components[i] As TListView;
           For j := 0 To lv.Columns.Count - 1 Do
             R.WriteInteger(lv.Name, lv.Column[j].Caption, lv.Columns[j].Width);
         End;
+      If Components[i] Is TVirtualStringTree Then
+        Begin
+          VST := Components[i] As TVirtualStringTree;
+          For j := 0 To VST.Header.Columns.Count - 1 Do
+            R.WriteInteger(VST.Name, VST.Header.Columns[j].Text, VST.Header.Columns[j].Width);
+        End;
+    END;
   Finally
     R.Free;
   End;
@@ -725,7 +753,7 @@ Begin
   FProgressMgr.Initialise(iProgressSteps);
   Try
     FProgressMgr.Show(strClearingExistingData);
-    lvFields.Clear;
+    vstFields.Clear;
     lvMethods.Clear;
     lvProperties.Clear;
     lvEvents.Clear;
@@ -735,14 +763,14 @@ Begin
         NodeData := vstComponentTree.GetNodeData(Node);
         If Assigned(NodeData.FObject) Then
           Begin
-            TIDEExplorerNEWRTTI.ProcessObject(
+            TIDEExplorerNEWRTTI.ProcessObjectFields(NodeData.FObject, vstFields, FProgressMgr);
+            {: @debug TIDEExplorerNEWRTTI.ProcessObject(
               NodeData.FObject,
-              lvFields,
               lvMethods,
               lvProperties,
               lvEvents,
               FProgressMgr
-              );
+              );}
             FProgressMgr.Update(strFindingOLDProperties);
             TIDEExplorerOLDRTTI.ProcessOldProperties(lvOldProperties, NodeData.FObject);
           End;
@@ -829,6 +857,69 @@ Var
 Begin
   NodeData := Sender.GetNodeData(Node);
   CellText := NodeData.FText;
+End;
+
+Procedure TDGHIDEExplorerForm.vstFieldsFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
+
+Var
+  NodeData : PDIEFieldData;
+  
+Begin
+  NodeData := Sender.GetNodeData(Node);
+  Finalize(NodeData^);
+End;
+
+Procedure TDGHIDEExplorerForm.vstFieldsGetImageIndex(Sender: TBaseVirtualTree; Node: PVirtualNode; Kind:
+  TVTImageKind; Column: TColumnIndex; Var Ghosted: Boolean; Var ImageIndex: TImageIndex);
+
+Var
+  NodeData : PDIEFieldData;
+  
+Begin
+  NodeData := Sender.GetNodeData(Node);
+  If Column = 0 Then
+    Case Kind Of
+      ikNormal,
+      ikSelected,
+      ikOverlay:  ImageIndex := NodeData.FVisibilityIndex;
+      ikState:    ImageIndex := NodeData.FImageIndex;
+    End;
+End;
+
+(**
+
+  This is an on get text event handler for the Fields treeview.
+
+  @precon  None.
+  @postcon Provide the correct text for the field from the nodes record.
+
+  @param   Sender   as a TBaseVirtualTree
+  @param   Node     as a PVirtualNode
+  @param   Column   as a TColumnIndex
+  @param   TextType as a TVSTTextType
+  @param   CellText as a String as a reference
+
+**)
+Procedure TDGHIDEExplorerForm.vstFieldsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column:
+  TColumnIndex; TextType: TVSTTextType; Var CellText: String);
+
+Type
+  TDIEFieldFields = (ffVisibility, ffQualifiedName, ffType, ffOffset, ffKind, ffSize, ffValue);
+  
+Var
+  NodeData : PDIEFieldData;
+  
+Begin
+  NodeData := Sender.GetNodeData(Node);
+  Case TDIEFieldFields(Column) Of
+    ffVisibility:    CellText := NodeData.FVisibility;  
+    ffQualifiedName: CellText := NodeData.FQualifiedName;
+    ffType:          CellText := NodeData.FType;  
+    ffOffset:        CellText := NodeData.FOffset;  
+    ffKind:          CellText := NodeData.FKind;  
+    ffSize:          CellText := NodeData.FSize;  
+    ffValue:         CellText := NodeData.FValue;  
+  End;
 End;
 
 End.
