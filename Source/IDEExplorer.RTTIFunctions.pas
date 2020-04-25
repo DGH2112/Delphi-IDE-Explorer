@@ -4,7 +4,7 @@
   properties and events for various objects pass to the single routine below.
 
   @Author  David Hoyle
-  @Version 2.592
+  @Version 2.744
   @Date    25 Apr 2020
 
 **)
@@ -28,21 +28,24 @@ Type
       FContext : TRttiContext;
   Strict Private
     Class Procedure ProcessRTTICoreProperty(Const C : TObject; Const P : TRTTIProperty;
-      Const View : TListView); Static;
+      Const vstView : TVirtualStringTree); Static;
     Class Procedure ProcessRTTIEvents(Const C : TObject; Const View : TListView); Static;
     Class Procedure ProcessRTTIFields(Const C : TObject; Const vstFields : TVirtualStringTree); Static;
     Class Procedure ProcessRTTIMethods(Const C : TObject; Const vstMethods : TVirtualStringTree); Static;
-    Class Procedure ProcessRTTIProperties(Const C : TObject; Const View : TListView); Static;
+    Class Procedure ProcessRTTIProperties(Const C : TObject;
+      Const vstProperties : TVirtualStringTree); Static;
     Class Function ProcessValue(Const Value : TValue; Const strType : String) : String; Static;
     Class Function ValueToString(Const Value : TValue) : String; Static;
     Class Procedure ProcessCoreClass(Const vstComponents : TVirtualStringTree; Const N : PVirtualNode;
       Const V : TValue); Static;
   Public
     Class Constructor Create;
-    Class Procedure ProcessObject(Const C : TObject; Const PropertyView, EventView : TListView; Const ProgressMgr : IDIEProgressMgr); Static;
+    Class Procedure ProcessObject(Const C : TObject; Const EventView : TListView; Const ProgressMgr : IDIEProgressMgr); Static;
     Class Procedure ProcessObjectFields(Const C : TObject; Const vstFields : TVirtualStringTree;
       Const ProgressMgr : IDIEProgressMgr); Static;
     Class Procedure ProcessObjectMethods(Const C : TObject; Const vstMethods : TVirtualStringTree;
+      Const ProgressMgr : IDIEProgressMgr); Static;
+    Class Procedure ProcessObjectProperties(Const C : TObject; Const vstProperties : TVirtualStringTree;
       Const ProgressMgr : IDIEProgressMgr); Static;
     Class Procedure ProcessClass(
       Const vstComponents : TVirtualStringTree;
@@ -68,7 +71,8 @@ Uses
   Graphics,
   Controls,
   Windows,
-  IDEExplorer.Functions, IDEExplorer.Types;
+  IDEExplorer.Functions,
+  IDEExplorer.Types;
 
 ResourceString
   (** A resource string for RTTI Exceptions. **)
@@ -77,8 +81,12 @@ ResourceString
 Const
   (** This is a constant array of string to describe the different visibility aspects
       of class members: private, protected, public and published. **)
-  strVisibility : Array[Low(TMemberVisibility)..High(TMemberVisibility)] Of String = (
-    'Private', 'Protected', 'Public', 'Published');
+  strVisibility : Array[TMemberVisibility] Of String = (
+    'Private',
+    'Protected',
+    'Public',
+    'Published'
+  );
 
 (**
 
@@ -212,20 +220,16 @@ End;
   @postcon The fields, methods, properties and events of the object are output.
 
   @param   C            as a TObject as a constant
-  @param   PropertyView as a TListView as a constant
   @param   EventView    as a TListView as a constant
   @param   ProgressMgr  as an IDIEProgressMgr as a constant
 
 **)
-Class Procedure TIDEExplorerNEWRTTI.ProcessObject(Const C : TObject; Const PropertyView, EventView : TListView; Const ProgressMgr : IDIEProgressMgr);
+Class Procedure TIDEExplorerNEWRTTI.ProcessObject(Const C : TObject; Const EventView : TListView; Const ProgressMgr : IDIEProgressMgr);
 
 ResourceString
-  strFindingProperties = 'Finding Properties...';
   strFindingEvents = 'Finding Events...';
 
 Begin
-  ProgressMgr.Update(strFindingProperties);
-  ProcessRTTIProperties(C, PropertyView);
   ProgressMgr.Update(strFindingEvents);
   ProcessRTTIEvents(C, EventView);
 End;
@@ -278,6 +282,29 @@ End;
 
 (**
 
+  This method processed the given objects properties and adds them to the given virtual treeview.
+
+  @precon  C and vstProperties must be valid instances.
+  @postcon The properties of the object are added to the VTV control.
+
+  @param   C             as a TObject as a constant
+  @param   vstProperties as a TVirtualStringTree as a constant
+  @param   ProgressMgr   as an IDIEProgressMgr as a constant
+
+**)
+Class Procedure TIDEExplorerNEWRTTI.ProcessObjectProperties(Const C: TObject;
+  Const vstProperties: TVirtualStringTree; Const ProgressMgr: IDIEProgressMgr);
+
+ResourceString
+  strFindingProperties = 'Finding Properties...';
+
+Begin
+  ProgressMgr.Update(strFindingProperties);
+  ProcessRTTIProperties(C, vstProperties);
+End;
+
+(**
+
   This procedure is called for properties and event as the output is the same they are just filtered 
   differently. This outputs a list view item for the given property/event in the object with the 
   following information: Scope; Fully Qualified Name; Property Type; Access; Value TypeKind; DataSize; 
@@ -286,13 +313,13 @@ End;
   @precon  C, P and View must be a valid instances.
   @postcon A list view item is create the property or event.
 
-  @param   C    as a TObject as a constant
-  @param   P    as a TRTTIProperty as a constant
-  @param   View as a TListView as a constant
+  @param   C       as a TObject as a constant
+  @param   P       as a TRTTIProperty as a constant
+  @param   vstView as a TVirtualStringTree as a constant
 
 **)
 Class Procedure TIDEExplorerNEWRTTI.ProcessRTTICoreProperty(Const C : TObject; Const P : TRTTIProperty;
-  Const View : TListView);
+  Const vstView : TVirtualStringTree);
 
   (**
 
@@ -301,10 +328,10 @@ Class Procedure TIDEExplorerNEWRTTI.ProcessRTTICoreProperty(Const C : TObject; C
     @precon  Item must be a valid instance.
     @postcon The properties access type is output.
 
-    @param   Item as a TListItem as a constant
+    @param   NodeData as a PDIEPropertyData as a constant
 
   **)
-  Procedure PropertyAccess(Const Item : TListItem);
+  Procedure PropertyAccess(Const NodeData : PDIEPropertyData);
 
   ResourceString
     strReadWrite = 'Read/Write';
@@ -314,49 +341,44 @@ Class Procedure TIDEExplorerNEWRTTI.ProcessRTTICoreProperty(Const C : TObject; C
 
   Begin
     If P.IsReadAble And P.IsWritable Then
-      Item.SubItems.Add(strReadWrite)
+      NodeData.FAccess := strReadWrite
     Else If P.IsReadAble And Not P.IsWritable Then
-      Item.SubItems.Add(strReadonly)
+      NodeData.FAccess := strReadonly
     Else If Not P.IsReadAble And P.IsWritable Then
-      Item.SubItems.Add(strWriteonly)
+      NodeData.FAccess := strWriteonly
     Else
-      Item.SubItems.Add(strUnknown);
+      NodeData.FAccess := strUnknown;
   End;
 
-Const
-  iNoOfFields = 8;
-  
 Var
   V    : TValue;
-  Item : TListItem;
+  Node : PVirtualNode;
+  NodeData : PDIEPropertyData;
 
 Begin
-  Item := View.Items.Add;
-  Item.Caption := strVisibility[P.Visibility];
-  Item.StateIndex := Integer(P.Visibility);
-  Item.SubItems.Add(P.Parent.Name + '.' + P.Name);
+  Node := vstView.AddChild(Nil);
+  NodeData := vstView.GetNodeData(Node);
+  NodeData.FVisibility := strVisibility[P.Visibility];
+  NodeData.FVisibilityIndex := Integer(P.Visibility);
+  NodeData.FQualifiedName := P.Parent.Name + '.' + P.Name;
   If Assigned(P.PropertyType) Then
     Begin
-      Item.SubItems.Add(P.PropertyType.ToString);
-      PropertyAccess(Item);
-      Item.SubItems.Add(GetEnumName(TypeInfo(TTypeKind), Ord(P.PropertyType.TypeKind)));
-      Item.ImageIndex := Integer(P.PropertyType.TypeKind);
-      Item.SubItems.Add(Format('%d ', [P.PropertyType.TypeSize]));
+      NodeData.FType := P.PropertyType.ToString;
+      PropertyAccess(NodeData);
+      NodeData.FKind := GetEnumName(TypeInfo(TTypeKind), Ord(P.PropertyType.TypeKind));
+      NodeData.FImageIndex := Integer(P.PropertyType.TypeKind);
+      NodeData.FSize := Format('%d ', [P.PropertyType.TypeSize]);
     End;
   Try
     If Not FatalValue(P.Name) And P.IsReadable Then
       Begin
         V := P.GetValue(C);
         If P.IsReadable Then
-          ProcessValue(V, P.PropertyType.ToString);
+          NodeData.FValue := ProcessValue(V, P.PropertyType.ToString);
       End;
   Except
     On E : EInsufficientRtti Do
-      Begin
-        While Item.SubItems.Count < iNoOfFields Do
-          Item.SubItems.Add('');
-        Item.SubItems.Add(Format(strOops, [E.ClassName, E.Message]));
-      End;
+      NodeData.FValue := Format(strOops, [E.ClassName, E.Message]);
   End;
 End;
 
@@ -388,7 +410,7 @@ Begin
     T := FContext.GetType(C.ClassType);
     For P In T.GetProperties Do
       If CompareText(Copy(P.Name, 1, iFirst2Chars), strOn) = 0 Then
-        ProcessRTTICoreProperty(C, P, View);
+        //: @debug ProcessRTTICoreProperty(C, P, View);
   Finally
     View.Items.EndUpdate;
   End;
@@ -504,11 +526,12 @@ End;
   @precon  C, Ctx and View must be valid instances.
   @postcon A list view item is created for each property.
 
-  @param   C    as a TObject as a constant
-  @param   View as a TListView as a constant
+  @param   C             as a TObject as a constant
+  @param   vstProperties as a TVirtualStringTree as a constant
 
 **)
-Class Procedure TIDEExplorerNEWRTTI.ProcessRTTIProperties(Const C : TObject; Const View : TListView);
+Class Procedure TIDEExplorerNEWRTTI.ProcessRTTIProperties(Const C : TObject;
+  Const vstProperties : TVirtualStringTree);
 
 Const
   iFirst2Chars = 2;
@@ -519,14 +542,14 @@ Var
   P    : TRTTIProperty;
 
 Begin
-  View.Items.BeginUpdate;
+  vstProperties.BeginUpdate;
   Try
     T := FContext.GetType(C.ClassType);
     For P In T.GetProperties Do
       If CompareText(Copy(P.Name, 1, iFirst2Chars), strOn) <> 0 Then
-        ProcessRTTICoreProperty(C, P, View);
+        ProcessRTTICoreProperty(C, P, vstProperties);
   Finally
-    View.Items.EndUpdate;
+    vstProperties.EndUpdate;
   End;
 End;
 

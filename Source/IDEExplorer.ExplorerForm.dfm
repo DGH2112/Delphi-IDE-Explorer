@@ -30,7 +30,7 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
     Top = 0
     Width = 636
     Height = 479
-    ActivePage = tabMethods
+    ActivePage = tabNewProperties
     Align = alClient
     TabOrder = 1
     object tabFields: TTabSheet
@@ -142,40 +142,63 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
     object tabNewProperties: TTabSheet
       Caption = '&Properties'
       ImageIndex = 2
-      object lvProperties: TListView
+      object vstProperties: TVirtualStringTree
         Left = 0
         Top = 0
         Width = 628
         Height = 448
         Align = alClient
+        Header.AutoSizeIndex = 0
+        Header.Height = 23
+        Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible]
+        HintMode = hmTooltip
+        Images = ilScope
+        ParentShowHint = False
+        ShowHint = True
+        StateImages = ilTypeKindImages
+        TabOrder = 0
+        TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+        TreeOptions.SelectionOptions = [toFullRowSelect]
+        OnFreeNode = vstPropertiesFreeNode
+        OnGetText = vstPropertiesGetText
+        OnGetImageIndex = vstPropertiesGetImageIndex
+        ExplicitHeight = 240
         Columns = <
           item
-            Caption = 'Scope'
+            Position = 0
+            Width = 66
+            WideText = 'Scope'
           end
           item
-            Caption = 'Qualified Name'
+            Position = 1
+            Width = 132
+            WideText = 'Qualified Name'
           end
           item
-            Caption = 'Type'
+            Position = 2
+            Width = 64
+            WideText = 'Type'
           end
           item
-            Caption = 'Access'
+            Position = 3
+            Width = 75
+            WideText = 'Access'
           end
           item
-            Caption = 'Kind'
+            Position = 4
+            Width = 100
+            WideText = 'Kind'
           end
           item
-            Caption = 'Size'
+            Position = 5
+            Width = 73
+            WideText = 'Size'
           end
           item
-            Caption = 'Value'
+            Position = 6
+            Width = 61
+            WideText = 'Value'
           end>
-        ReadOnly = True
-        RowSelect = True
-        SmallImages = ilTypeKindImages
-        StateImages = ilScope
-        TabOrder = 0
-        ViewStyle = vsReport
       end
     end
     object tabEvents: TTabSheet

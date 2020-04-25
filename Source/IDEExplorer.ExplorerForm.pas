@@ -3,7 +3,7 @@
   This module contains the explorer form interface.
 
   @Date    25 Apr 2020
-  @Version 4.634
+  @Version 4.966
   @Author  David Hoyle
 
   @done    Add a progress bar
@@ -46,7 +46,6 @@ Type
     lvOldProperties: TListView;
     tvHierarchies: TTreeView;
     tabNewProperties: TTabSheet;
-    lvProperties: TListView;
     tabFields: TTabSheet;
     tabEvents: TTabSheet;
     lvEvents: TListView;
@@ -58,6 +57,7 @@ Type
     tmFilterTimer: TTimer;
     vstFields: TVirtualStringTree;
     vstMethods: TVirtualStringTree;
+    vstProperties: TVirtualStringTree;
     Procedure BuildFormComponentTree(Sender: TObject);
     procedure edtComponentFilterChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -82,6 +82,11 @@ Type
     procedure vstMethodsGetImageIndex(Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind;
       Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: TImageIndex);
     procedure vstMethodsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
+      TextType: TVSTTextType; var CellText: string);
+    procedure vstPropertiesFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure vstPropertiesGetImageIndex(Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind;
+      Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: TImageIndex);
+    procedure vstPropertiesGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
       TextType: TVSTTextType; var CellText: string);
   Strict Private
     FProgressMgr               : IDIEProgressMgr;
@@ -501,6 +506,7 @@ Begin
   vstComponentTree.NodeDataSize := SizeOf(TDIEObjectData);
   vstFields.NodeDataSize := SizeOf(TDIEFieldData);
   vstMethods.NodeDataSize := SizeOf(TDIEMethodData);
+  vstProperties.NodeDataSize := SizeOf(TDIEPropertyData);
 End;
 
 (**
@@ -761,7 +767,7 @@ Begin
     FProgressMgr.Show(strClearingExistingData);
     vstFields.Clear;
     vstMethods.Clear;
-    lvProperties.Clear;
+    vstProperties.Clear;
     lvEvents.Clear;
     lvOldProperties.Clear;
     If Assigned(Node) Then
@@ -771,7 +777,8 @@ Begin
           Begin
             TIDEExplorerNEWRTTI.ProcessObjectFields(NodeData.FObject, vstFields, FProgressMgr);
             TIDEExplorerNEWRTTI.ProcessObjectMethods(NodeData.FObject, vstMethods, FProgressMgr);
-            TIDEExplorerNEWRTTI.ProcessObject(NodeData.FObject, lvProperties, lvEvents, FProgressMgr);
+            TIDEExplorerNEWRTTI.ProcessObjectProperties(NodeData.FObject, vstProperties, FProgressMgr);
+            TIDEExplorerNEWRTTI.ProcessObject(NodeData.FObject, lvEvents, FProgressMgr);
             FProgressMgr.Update(strFindingOLDProperties);
             TIDEExplorerOLDRTTI.ProcessOldProperties(lvOldProperties, NodeData.FObject);
           End;
@@ -1032,6 +1039,95 @@ Begin
     mfQualifiedName: CellText := NodeData.FQualifiedName;
     mfType:          CellText := NodeData.FType;
     mfSignature:     CellText := NodeData.FSignature;
+  End;
+End;
+
+(**
+
+  This is an on free event handler for the Properties treeview.
+
+  @precon  None.
+  @postcon Finalises the managed types in the treeview node.
+
+  @param   Sender as a TBaseVirtualTree
+  @param   Node   as a PVirtualNode
+
+**)
+Procedure TDGHIDEExplorerForm.vstPropertiesFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
+
+Var
+  NodeData : PDIEPropertyData;
+  
+Begin
+  NodeData := Sender.GetNodeData(Node);
+  Finalize(NodeData^);
+End;
+
+(**
+
+  This is an on Get Image Index event handler for the Propeties treeview.
+
+  @precon  None.
+  @postcon Returns the indexes for the State and image indexes.
+
+  @param   Sender     as a TBaseVirtualTree
+  @param   Node       as a PVirtualNode
+  @param   Kind       as a TVTImageKind
+  @param   Column     as a TColumnIndex
+  @param   Ghosted    as a Boolean as a reference
+  @param   ImageIndex as a TImageIndex as a reference
+
+**)
+Procedure TDGHIDEExplorerForm.vstPropertiesGetImageIndex(Sender: TBaseVirtualTree; Node: PVirtualNode;
+  Kind: TVTImageKind; Column: TColumnIndex; Var Ghosted: Boolean; Var ImageIndex: TImageIndex);
+
+Var
+  NodeData : PDIEPropertyData;
+  
+Begin
+  NodeData := Sender.GetNodeData(Node);
+  If Column = 0 Then
+    Case Kind Of
+      ikNormal,
+      ikSelected,
+      ikOverlay:  ImageIndex := NodeData.FVisibilityIndex;
+      ikState:    ImageIndex := NodeData.FImageIndex;
+    End;
+End;
+
+(**
+
+  This is an on get text event handler for the Properties treeview.
+
+  @precon  None.
+  @postcon Provide the correct text for the properties from the nodes record.
+
+  @param   Sender   as a TBaseVirtualTree
+  @param   Node     as a PVirtualNode
+  @param   Column   as a TColumnIndex
+  @param   TextType as a TVSTTextType
+  @param   CellText as a String as a reference
+
+**)
+Procedure TDGHIDEExplorerForm.vstPropertiesGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column:
+  TColumnIndex; TextType: TVSTTextType; Var CellText: String);
+
+Type
+  TDIEPropertyFields = (pfVisibility, pfQualifiedName, pfType, pfAccess, pfKind, pfSize, pfValue);
+  
+Var
+  NodeData : PDIEPropertyData;
+  
+Begin
+  NodeData := Sender.GetNodeData(Node);
+  Case TDIEPropertyFields(Column) Of
+    pfVisibility:    CellText := NodeData.FVisibility;  
+    pfQualifiedName: CellText := NodeData.FQualifiedName;
+    pfType:          CellText := NodeData.FType;  
+    pfAccess:        CellText := NodeData.FAccess;  
+    pfKind:          CellText := NodeData.FKind;  
+    pfSize:          CellText := NodeData.FSize;  
+    pfValue:         CellText := NodeData.FValue;  
   End;
 End;
 
