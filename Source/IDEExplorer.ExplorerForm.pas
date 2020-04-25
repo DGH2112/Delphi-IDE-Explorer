@@ -2,13 +2,13 @@
 
   This module contains the explorer form interface.
 
-  @Date    19 Apr 2020
-  @Version 3.383
+  @Date    25 Apr 2020
+  @Version 3.853
   @Author  David Hoyle
 
   @done    Add a progress bar
-  @todo    Add a filter for the treeview.
-  @todo    Add a filter for the fileds, methods, proeprties, etc.
+  @done    Add a filter for the treeview.
+  @todo    Add a filter for the fileds, methods, properties, etc.
 
 **)
 Unit IDEExplorer.ExplorerForm;
@@ -28,7 +28,7 @@ Uses
   ExtCtrls,
   ImgList,
   System.ImageList,
-  IDEExplorer.Interfaces, VirtualTrees;
+  IDEExplorer.Interfaces, VirtualTrees, Vcl.StdCtrls;
 
 {$INCLUDE CompilerDefinitions.inc}
 
@@ -53,10 +53,15 @@ Type
     lvMethods: TListView;
     ilScope: TImageList;
     vstComponentTree: TVirtualStringTree;
+    pnlTreePanel: TPanel;
+    edtComponentFilter: TEdit;
+    tmFilterTimer: TTimer;
     Procedure BuildFormComponentTree(Sender: TObject);
+    procedure edtComponentFilterChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure tmFilterTimerTimer(Sender: TObject);
     procedure vstComponentTreeCompareNodes(Sender: TBaseVirtualTree; Node1, Node2: PVirtualNode; Column:
       TColumnIndex; var Result: Integer);
     procedure vstComponentTreeFocusChanged(Sender: TBaseVirtualTree; Node: PVirtualNode; Column:
@@ -67,13 +72,15 @@ Type
     procedure vstComponentTreeGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
       TextType: TVSTTextType; var CellText: string);
   Strict Private
-    FProgressMgr : IDIEProgressMgr;
+    FProgressMgr               : IDIEProgressMgr;
+    FLastComponentFilterUpdate : Cardinal;
   Strict Protected
     Procedure GetComponents(Const Node: PVirtualNode; Const Component: TComponent);
     Procedure LoadSettings;
     Procedure SaveSettings;
     Procedure BuildComponentHeritage(Const Node : PVirtualNode);
     Procedure BuildParentHeritage(Const Node : PVirtualNode);
+    Procedure FilterComponents;
   Public
     Class Procedure Execute;
   End;
@@ -89,6 +96,8 @@ Uses
   {$ENDIF DEBUG}
   ToolsAPI,
   Registry,
+  RegularExpressions,
+  RegularExpressionsCore,
   IDEExplorer.RTTIFunctions,
   IDEExplorer.OLDRTTIFunctions,
   IDEExplorer.ProgressMgr, IDEExplorer.Types;
@@ -353,6 +362,22 @@ End;
 
 (**
 
+  This is an on change event handler for the ComponentFilter edit control.
+
+  @precon  None.
+  @postcon Updates the last time the filter was changed.
+
+  @param   Sender as a TObject
+
+**)
+Procedure TDGHIDEExplorerForm.edtComponentFilterChange(Sender: TObject);
+
+Begin
+  FLastComponentFilterUpdate := GetTickCount;
+End;
+
+(**
+
   This method displays the form modally.
 
   @precon  None.
@@ -382,6 +407,66 @@ Begin
     F.ShowModal;
   Finally
     F.Free;
+  End;
+End;
+
+(**
+
+  This method filters the component tree based on the regular expression in the ComponentFilter edit
+  control.
+
+  @precon  None.
+  @postcon Only the nodes with matching text (and their parents) are visible.
+
+**)
+Procedure TDGHIDEExplorerForm.FilterComponents;
+
+ResourceString
+  strRegularExpressionError = 'Regular Expression Error';
+
+Var
+  FilterRegEx: TRegEx;
+  N, P: PVirtualNode;
+  NodeData : PDIEObjectData;
+  strFilterText : String;
+
+Begin
+  strFilterText := edtComponentFilter.Text;
+  Try
+    If strFilterText.Length > 0 Then
+      FilterRegEx := TRegEx.Create(strFilterText, [roIgnoreCase, roCompiled, roSingleLine]);
+  Except
+    On E : ERegularExpressionError Do
+      Begin
+        TaskMessageDlg(strRegularExpressionError, E.Message, mtError, [mbOK], 0);
+        edtComponentFilter.SetFocus;
+        Exit;
+      End;
+  End;
+  vstComponentTree.BeginUpdate;
+  Try
+    N := vstComponentTree.GetFirst;
+    While Assigned(N) Do
+      Begin
+        If strFilterText.Length > 0 Then
+          Begin
+            NodeData := vstComponentTree.GetNodeData(N);
+            vstComponentTree.IsVisible[N] := FilterRegEx.IsMatch(NodeData.FText);
+            If vstComponentTree.IsVisible[N] Then
+              Begin
+                P := vstComponentTree.NodeParent[N];
+                While Assigned(P) Do
+                  Begin
+                    vstComponentTree.IsVisible[P] := True;
+                    P := vstComponentTree.NodeParent[P];
+                  End;
+              End;
+          End Else
+            vstComponentTree.IsVisible[N] := True;
+        N := vstComponentTree.GetNext(N);
+      End;
+  Finally
+    vstComponentTree.EndUpdate;
   End;
 End;
 
@@ -505,7 +590,7 @@ Begin
     Self.Left := R.ReadInteger(SectionName, strLeftKey, (Application.MainForm.Width - Width) Div iHalf);
     Self.Width := R.ReadInteger(SectionName, strWidthKey, Width);
     Self.Height := R.ReadInteger(SectionName, strHeightKey, Height);
-    vstComponentTree.Width := R.ReadInteger(SectionName, strTreeWidthKey, Width Div iQuarter);
+    pnlTreePanel.Width := R.ReadInteger(SectionName, strTreeWidthKey, Width Div iQuarter);
     For i := 0 To ComponentCount - 1 Do
       If Components[i] Is TListView Then
         Begin
@@ -541,7 +626,7 @@ Begin
     R.WriteInteger(SectionName, strLeftKey, Self.Left);
     R.WriteInteger(SectionName, strWidthKey, Self.Width);
     R.WriteInteger(SectionName, strHeightKey, Self.Height);
-    R.WriteInteger(SectionName, strTreeWidthKey, vstComponentTree.Width);
+    R.WriteInteger(SectionName, strTreeWidthKey, pnlTreePanel.Width);
     For i := 0 To ComponentCount - 1 Do
       If Components[i] Is TListView Then
         Begin
@@ -552,6 +637,35 @@ Begin
   Finally
     R.Free;
   End;
+End;
+
+(**
+
+  This is a timer event handler for filtering the component tree and pfields, method properties, etc.
+
+  @precon  None.
+  @postcon The Component tree and / or Fields, Method Properties, etc are filtered.
+
+  @param   Sender as a TObject
+
+**)
+Procedure TDGHIDEExplorerForm.tmFilterTimerTimer(Sender: TObject);
+
+Const
+  iUpdateInterval = 250;
+
+Begin
+  If (FLastComponentFilterUpdate > 0) And (GetTickCount > FLastComponentFilterUpdate + iUpdateInterval) Then
+    Try
+      tmFilterTimer.Enabled := False;
+      Try
+        FilterComponents;
+      Finally
+        tmFilterTimer.Enabled := True;
+      End;
+    Finally
+      FLastComponentFilterUpdate := 0;
+    End;
 End;
 
 (**
