@@ -30,7 +30,7 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
     Top = 0
     Width = 636
     Height = 479
-    ActivePage = tabFields
+    ActivePage = tabMethods
     Align = alClient
     TabOrder = 1
     object tabFields: TTabSheet
@@ -96,31 +96,47 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
     object tabMethods: TTabSheet
       Caption = '&Methods'
       ImageIndex = 5
-      object lvMethods: TListView
+      object vstMethods: TVirtualStringTree
         Left = 0
         Top = 0
         Width = 628
         Height = 448
         Align = alClient
+        Header.AutoSizeIndex = 0
+        Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible]
+        HintMode = hmTooltip
+        Images = ilScope
+        ParentShowHint = False
+        ShowHint = True
+        StateImages = ilTypeKindImages
+        TabOrder = 0
+        TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+        TreeOptions.SelectionOptions = [toFullRowSelect]
+        OnFreeNode = vstMethodsFreeNode
+        OnGetText = vstMethodsGetText
+        OnGetImageIndex = vstMethodsGetImageIndex
+        ExplicitHeight = 240
         Columns = <
           item
-            Caption = 'Scope'
+            Position = 0
+            Width = 100
+            WideText = 'Scope'
           end
           item
-            Caption = 'Qualified Name'
+            Position = 1
+            Width = 100
+            WideText = 'Qualified Name'
           end
           item
-            Caption = 'Type'
+            Position = 2
+            Width = 100
+            WideText = 'Type'
           end
           item
-            Caption = 'Signature'
+            Position = 3
+            Width = 100
+            WideText = 'Signature'
           end>
-        ReadOnly = True
-        RowSelect = True
-        SmallImages = ilTypeKindImages
-        StateImages = ilScope
-        TabOrder = 0
-        ViewStyle = vsReport
       end
     end
     object tabNewProperties: TTabSheet

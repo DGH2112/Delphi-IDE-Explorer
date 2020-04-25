@@ -3,7 +3,7 @@
   This module contains simple types for use throughout the plug-in.
 
   @Author  David Hoyle
-  @Version 1.086
+  @Version 1.150
   @Date    25 Apr 2020
   
 **)
@@ -47,6 +47,18 @@ Type
   End;
   (** A pointer to the above structure. **)
   PDIEFieldData = ^TDIEFieldData;
+
+  (** A record to describe the data in the Methods treeview. **)
+  TDIEMethodData = Record
+    FVisibility      : String;
+    FVisibilityIndex : Integer;
+    FQualifiedName   : String;
+    FType            : String;
+    FImageIndex      : Integer;
+    FSignature       : String;
+  End;
+  (** A pointer to the above structure. **)
+  PDIEMethodData = ^TDIEMethodData;
 
 Implementation
 

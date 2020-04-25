@@ -4,7 +4,7 @@
   properties and events for various objects pass to the single routine below.
 
   @Author  David Hoyle
-  @Version 2.455
+  @Version 2.592
   @Date    25 Apr 2020
 
 **)
@@ -31,7 +31,7 @@ Type
       Const View : TListView); Static;
     Class Procedure ProcessRTTIEvents(Const C : TObject; Const View : TListView); Static;
     Class Procedure ProcessRTTIFields(Const C : TObject; Const vstFields : TVirtualStringTree); Static;
-    Class Procedure ProcessRTTIMethods(Const C : TObject; Const View : TListView); Static;
+    Class Procedure ProcessRTTIMethods(Const C : TObject; Const vstMethods : TVirtualStringTree); Static;
     Class Procedure ProcessRTTIProperties(Const C : TObject; Const View : TListView); Static;
     Class Function ProcessValue(Const Value : TValue; Const strType : String) : String; Static;
     Class Function ValueToString(Const Value : TValue) : String; Static;
@@ -39,9 +39,10 @@ Type
       Const V : TValue); Static;
   Public
     Class Constructor Create;
-    Class Procedure ProcessObject(Const C : TObject; Const MethodView, PropertyView,
-      EventView : TListView; Const ProgressMgr : IDIEProgressMgr); Static;
-    Class Procedure ProcessObjectFields(Const C : TObject; Const vstField : TVirtualStringTree;
+    Class Procedure ProcessObject(Const C : TObject; Const PropertyView, EventView : TListView; Const ProgressMgr : IDIEProgressMgr); Static;
+    Class Procedure ProcessObjectFields(Const C : TObject; Const vstFields : TVirtualStringTree;
+      Const ProgressMgr : IDIEProgressMgr); Static;
+    Class Procedure ProcessObjectMethods(Const C : TObject; Const vstMethods : TVirtualStringTree;
       Const ProgressMgr : IDIEProgressMgr); Static;
     Class Procedure ProcessClass(
       Const vstComponents : TVirtualStringTree;
@@ -102,7 +103,7 @@ End;
   @postcon Iterates through the classes subclasses adding them to the tree and then asking those classes
            for their sub-classes.
 
-  @bug     Using this code on the IDE (RAD Studio 10 Seattle) causes catastrophic failures: It is 
+  @BUG     Using this code on the IDE (RAD Studio 10 Seattle) causes catastrophic failures: It is 
            assumed that when TValue extracts the value of an item it inadvertantly changes some of 
            those objects which cause various AV and a divide by zero error. DO NOT IMPLEMENT THIS 
            UNTIL THE REASONS FOR THE FAILURES ARE UNDERSTOOD OTHERWISE YOU WILL CRASH YOUR IDE.
@@ -211,23 +212,18 @@ End;
   @postcon The fields, methods, properties and events of the object are output.
 
   @param   C            as a TObject as a constant
-  @param   MethodView   as a TListView as a constant
   @param   PropertyView as a TListView as a constant
   @param   EventView    as a TListView as a constant
   @param   ProgressMgr  as an IDIEProgressMgr as a constant
 
 **)
-Class Procedure TIDEExplorerNEWRTTI.ProcessObject(Const C : TObject; Const MethodView,
-  PropertyView, EventView : TListView; Const ProgressMgr : IDIEProgressMgr);
+Class Procedure TIDEExplorerNEWRTTI.ProcessObject(Const C : TObject; Const PropertyView, EventView : TListView; Const ProgressMgr : IDIEProgressMgr);
 
 ResourceString
-  strFindingMethods = 'Finding Methods...';
   strFindingProperties = 'Finding Properties...';
   strFindingEvents = 'Finding Events...';
 
 Begin
-  ProgressMgr.Update(strFindingMethods);
-  ProcessRTTIMethods(C, MethodView);
   ProgressMgr.Update(strFindingProperties);
   ProcessRTTIProperties(C, PropertyView);
   ProgressMgr.Update(strFindingEvents);
@@ -238,23 +234,46 @@ End;
 
   This method processed the given objects fields and adds them to the given virtual treeview.
 
-  @precon  C and vstField must be valid instances.
+  @precon  C and vstFields must be valid instances.
   @postcon The fields of the object are added to the VTV control.
 
   @param   C           as a TObject as a constant
-  @param   vstField    as a TVirtualStringTree as a constant
+  @param   vstFields   as a TVirtualStringTree as a constant
   @param   ProgressMgr as an IDIEProgressMgr as a constant
 
 **)
 Class Procedure TIDEExplorerNEWRTTI.ProcessObjectFields(Const C: TObject;
-  Const vstField: TVirtualStringTree; Const ProgressMgr: IDIEProgressMgr);
+  Const vstFields: TVirtualStringTree; Const ProgressMgr: IDIEProgressMgr);
 
 ResourceString
   strFindingFields = 'Finding Fields...';
 
 Begin
   ProgressMgr.Update(strFindingFields);
-  ProcessRTTIFields(C, vstField);
+  ProcessRTTIFields(C, vstFields);
+End;
+
+(**
+
+  This method processed the given objects methods and adds them to the given virtual treeview.
+
+  @precon  C and vstMethods must be valid instances.
+  @postcon The methods of the object are added to the VTV control.
+
+  @param   C           as a TObject as a constant
+  @param   vstMethods  as a TVirtualStringTree as a constant
+  @param   ProgressMgr as an IDIEProgressMgr as a constant
+
+**)
+Class Procedure TIDEExplorerNEWRTTI.ProcessObjectMethods(Const C: TObject;
+  Const vstMethods: TVirtualStringTree; Const ProgressMgr: IDIEProgressMgr);
+
+ResourceString
+  strFindingMethods = 'Finding Methods...';
+
+Begin
+  ProgressMgr.Update(strFindingMethods);
+  ProcessRTTIMethods(C, vstMethods);
 End;
 
 (**
@@ -439,45 +458,41 @@ End;
   @precon  C, Ctx and View must be valid instances.
   @postcon A list view item is creates for each method.
 
-  @param   C    as a TObject as a constant
-  @param   View as a TListView as a constant
+  @param   C          as a TObject as a constant
+  @param   vstMethods as a TVirtualStringTree as a constant
 
 **)
-Class Procedure TIDEExplorerNEWRTTI.ProcessRTTIMethods(Const C : TObject; Const View : TListView);
+Class Procedure TIDEExplorerNEWRTTI.ProcessRTTIMethods(Const C : TObject;
+  Const vstMethods : TVirtualStringTree);
 
-Const
-  iNoOfFields = 2;
-  
 Var
-  T : TRTTIType;
-  M    : TRTTIMethod;
-  Item : TListItem;
+  Node: PVirtualNode;
+  NodeData : PDIEMethodData;
+  AType : TRTTIType;
+  Method    : TRTTIMethod;
 
 Begin
-  View.Items.BeginUpdate;
+  vstMethods.BeginUpdate;
   Try
-    T := FContext.GetType(C.ClassType);
-    For M In T.GetMethods Do
+    AType := FContext.GetType(C.ClassType);
+    For Method In AType.GetMethods Do
       Begin
-        Item := View.Items.Add;
-        Item.Caption := strVisibility[M.Visibility];
-        Item.StateIndex := Integer(M.Visibility);
-        Item.SubItems.Add(M.Parent.Name + '.' + M.Name);
+        Node := vstMethods.AddChild(Nil);
+        NodeData := vstMethods.GetNodeData(Node);
+        NodeData.FVisibility := strVisibility[Method.Visibility];
+        NodeData.FVisibilityIndex := Integer(Method.Visibility);
+        NodeData.FQualifiedName := Method.Parent.Name + '.' + Method.Name;
         Try
-          Item.SubItems.Add(GetEnumName(TypeInfo(TMethodKind), Ord(M.MethodKind)));
-          Item.ImageIndex := Integer(tkMethod);
-          Item.SubItems.Add(M.ToString);
+          NodeData.FType := GetEnumName(TypeInfo(TMethodKind), Ord(Method.MethodKind));
+          NodeData.FImageIndex := Integer(tkMethod);
+          NodeData.FSignature := Method.ToString;
         Except
           On E : EInsufficientRtti Do
-            Begin
-              While Item.SubItems.Count < iNoOfFields Do
-                Item.SubItems.Add('');
-              Item.SubItems.Add(Format(strOops, [E.ClassName, E.Message]));
-            End;
+            NodeData.FSignature := Format(strOops, [E.ClassName, E.Message]);
         End;
       End;
   Finally
-    View.Items.EndUpdate;
+    vstMethods.EndUpdate;
   End;
 End;
 

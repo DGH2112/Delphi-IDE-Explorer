@@ -3,7 +3,7 @@
   This module contains the explorer form interface.
 
   @Date    25 Apr 2020
-  @Version 4.210
+  @Version 4.634
   @Author  David Hoyle
 
   @done    Add a progress bar
@@ -51,13 +51,13 @@ Type
     tabEvents: TTabSheet;
     lvEvents: TListView;
     tabMethods: TTabSheet;
-    lvMethods: TListView;
     ilScope: TImageList;
     vstComponentTree: TVirtualStringTree;
     pnlTreePanel: TPanel;
     edtComponentFilter: TEdit;
     tmFilterTimer: TTimer;
     vstFields: TVirtualStringTree;
+    vstMethods: TVirtualStringTree;
     Procedure BuildFormComponentTree(Sender: TObject);
     procedure edtComponentFilterChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -78,6 +78,11 @@ Type
       Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: TImageIndex);
     procedure vstFieldsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType:
       TVSTTextType; var CellText: string);
+    procedure vstMethodsFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure vstMethodsGetImageIndex(Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind;
+      Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: TImageIndex);
+    procedure vstMethodsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
+      TextType: TVSTTextType; var CellText: string);
   Strict Private
     FProgressMgr               : IDIEProgressMgr;
     FLastComponentFilterUpdate : Cardinal;
@@ -495,6 +500,7 @@ Begin
   FProgressMgr := TDIEProgressMgr.Create(Self);
   vstComponentTree.NodeDataSize := SizeOf(TDIEObjectData);
   vstFields.NodeDataSize := SizeOf(TDIEFieldData);
+  vstMethods.NodeDataSize := SizeOf(TDIEMethodData);
 End;
 
 (**
@@ -754,7 +760,7 @@ Begin
   Try
     FProgressMgr.Show(strClearingExistingData);
     vstFields.Clear;
-    lvMethods.Clear;
+    vstMethods.Clear;
     lvProperties.Clear;
     lvEvents.Clear;
     lvOldProperties.Clear;
@@ -764,13 +770,8 @@ Begin
         If Assigned(NodeData.FObject) Then
           Begin
             TIDEExplorerNEWRTTI.ProcessObjectFields(NodeData.FObject, vstFields, FProgressMgr);
-            {: @debug TIDEExplorerNEWRTTI.ProcessObject(
-              NodeData.FObject,
-              lvMethods,
-              lvProperties,
-              lvEvents,
-              FProgressMgr
-              );}
+            TIDEExplorerNEWRTTI.ProcessObjectMethods(NodeData.FObject, vstMethods, FProgressMgr);
+            TIDEExplorerNEWRTTI.ProcessObject(NodeData.FObject, lvProperties, lvEvents, FProgressMgr);
             FProgressMgr.Update(strFindingOLDProperties);
             TIDEExplorerOLDRTTI.ProcessOldProperties(lvOldProperties, NodeData.FObject);
           End;
@@ -859,6 +860,17 @@ Begin
   CellText := NodeData.FText;
 End;
 
+(**
+
+  This is an on free event handler for the Fields treeview.
+
+  @precon  None.
+  @postcon Finalises the managed types in the treeview node.
+
+  @param   Sender as a TBaseVirtualTree
+  @param   Node   as a PVirtualNode
+
+**)
 Procedure TDGHIDEExplorerForm.vstFieldsFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
 
 Var
@@ -869,6 +881,21 @@ Begin
   Finalize(NodeData^);
 End;
 
+(**
+
+  This is an on Get Image Index event handler for the Fields treeview.
+
+  @precon  None.
+  @postcon Returns the indexes for the State and image indexes.
+
+  @param   Sender     as a TBaseVirtualTree
+  @param   Node       as a PVirtualNode
+  @param   Kind       as a TVTImageKind
+  @param   Column     as a TColumnIndex
+  @param   Ghosted    as a Boolean as a reference
+  @param   ImageIndex as a TImageIndex as a reference
+
+**)
 Procedure TDGHIDEExplorerForm.vstFieldsGetImageIndex(Sender: TBaseVirtualTree; Node: PVirtualNode; Kind:
   TVTImageKind; Column: TColumnIndex; Var Ghosted: Boolean; Var ImageIndex: TImageIndex);
 
@@ -919,6 +946,92 @@ Begin
     ffKind:          CellText := NodeData.FKind;  
     ffSize:          CellText := NodeData.FSize;  
     ffValue:         CellText := NodeData.FValue;  
+  End;
+End;
+
+(**
+
+  This is an on free event handler for the Methods treeview.
+
+  @precon  None.
+  @postcon Finalises the managed types in the treeview node.
+
+  @param   Sender as a TBaseVirtualTree
+  @param   Node   as a PVirtualNode
+
+**)
+Procedure TDGHIDEExplorerForm.vstMethodsFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
+
+Var
+  NodeData : PDIEMethodData;
+  
+Begin
+  NodeData := Sender.GetNodeData(Node);
+  Finalize(NodeData^);
+End;
+
+(**
+
+  This is an on Get Image Index event handler for the Methods treeview.
+
+  @precon  None.
+  @postcon Returns the indexes for the State and image indexes.
+
+  @param   Sender     as a TBaseVirtualTree
+  @param   Node       as a PVirtualNode
+  @param   Kind       as a TVTImageKind
+  @param   Column     as a TColumnIndex
+  @param   Ghosted    as a Boolean as a reference
+  @param   ImageIndex as a TImageIndex as a reference
+
+**)
+Procedure TDGHIDEExplorerForm.vstMethodsGetImageIndex(Sender: TBaseVirtualTree; Node: PVirtualNode;
+  Kind: TVTImageKind; Column: TColumnIndex; Var Ghosted: Boolean; Var ImageIndex: TImageIndex);
+
+Var
+  NodeData : PDIEMethodData;
+  
+Begin
+  NodeData := Sender.GetNodeData(Node);
+  If Column = 0 Then
+    Case Kind Of
+      ikNormal,
+      ikSelected,
+      ikOverlay:  ImageIndex := NodeData.FVisibilityIndex;
+      ikState:    ImageIndex := NodeData.FImageIndex;
+    End;
+End;
+
+(**
+
+  This is an on get text event handler for the Methods treeview.
+
+  @precon  None.
+  @postcon Provide the correct text for the method from the nodes record.
+
+  @param   Sender   as a TBaseVirtualTree
+  @param   Node     as a PVirtualNode
+  @param   Column   as a TColumnIndex
+  @param   TextType as a TVSTTextType
+  @param   CellText as a String as a reference
+
+**)
+Procedure TDGHIDEExplorerForm.vstMethodsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column:
+  TColumnIndex; TextType: TVSTTextType; Var CellText: String);
+
+Type
+  TDIEMethodFields = (mfVisibility, mfQualifiedName, mfType, mfSignature);
+  
+Var
+  NodeData : PDIEMethodData;
+  
+Begin
+  NodeData := Sender.GetNodeData(Node);
+  Case TDIEMethodFields(Column) Of
+    mfVisibility:    CellText := NodeData.FVisibility;
+    mfQualifiedName: CellText := NodeData.FQualifiedName;
+    mfType:          CellText := NodeData.FType;
+    mfSignature:     CellText := NodeData.FSignature;
   End;
 End;
 
