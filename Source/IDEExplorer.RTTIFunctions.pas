@@ -4,7 +4,7 @@
   properties and events for various objects pass to the single routine below.
 
   @Author  David Hoyle
-  @Version 2.744
+  @Version 2.758
   @Date    25 Apr 2020
 
 **)
@@ -29,7 +29,7 @@ Type
   Strict Private
     Class Procedure ProcessRTTICoreProperty(Const C : TObject; Const P : TRTTIProperty;
       Const vstView : TVirtualStringTree); Static;
-    Class Procedure ProcessRTTIEvents(Const C : TObject; Const View : TListView); Static;
+    Class Procedure ProcessRTTIEvents(Const C : TObject; Const vstEvents : TVirtualStringTree); Static;
     Class Procedure ProcessRTTIFields(Const C : TObject; Const vstFields : TVirtualStringTree); Static;
     Class Procedure ProcessRTTIMethods(Const C : TObject; Const vstMethods : TVirtualStringTree); Static;
     Class Procedure ProcessRTTIProperties(Const C : TObject;
@@ -40,7 +40,8 @@ Type
       Const V : TValue); Static;
   Public
     Class Constructor Create;
-    Class Procedure ProcessObject(Const C : TObject; Const EventView : TListView; Const ProgressMgr : IDIEProgressMgr); Static;
+    Class Procedure ProcessObjectEvents(Const C : TObject; Const vstEvents : TVirtualStringTree;
+      Const ProgressMgr : IDIEProgressMgr); Static;
     Class Procedure ProcessObjectFields(Const C : TObject; Const vstFields : TVirtualStringTree;
       Const ProgressMgr : IDIEProgressMgr); Static;
     Class Procedure ProcessObjectMethods(Const C : TObject; Const vstMethods : TVirtualStringTree;
@@ -219,19 +220,20 @@ End;
   @precon  C, FieldView, MethodView, PropertyView and EventView must be valid instances.
   @postcon The fields, methods, properties and events of the object are output.
 
-  @param   C            as a TObject as a constant
-  @param   EventView    as a TListView as a constant
-  @param   ProgressMgr  as an IDIEProgressMgr as a constant
+  @param   C           as a TObject as a constant
+  @param   vstEvents   as a TVirtualStringTree as a constant
+  @param   ProgressMgr as an IDIEProgressMgr as a constant
 
 **)
-Class Procedure TIDEExplorerNEWRTTI.ProcessObject(Const C : TObject; Const EventView : TListView; Const ProgressMgr : IDIEProgressMgr);
+Class Procedure TIDEExplorerNEWRTTI.ProcessObjectEvents(Const C : TObject;
+  Const vstEvents : TVirtualStringTree; Const ProgressMgr : IDIEProgressMgr);
 
 ResourceString
   strFindingEvents = 'Finding Events...';
 
 Begin
   ProgressMgr.Update(strFindingEvents);
-  ProcessRTTIEvents(C, EventView);
+  ProcessRTTIEvents(C, vstEvents);
 End;
 
 (**
@@ -390,11 +392,12 @@ End;
   @precon  C, Ctx and View must be valid instances.
   @postcon A list view item is created for each event.
 
-  @param   C    as a TObject as a constant
-  @param   View as a TListView as a constant
+  @param   C         as a TObject as a constant
+  @param   vstEvents as a TVirtualStringTree as a constant
 
 **)
-Class Procedure TIDEExplorerNEWRTTI.ProcessRTTIEvents(Const C : TObject; Const View : TListView);
+Class Procedure TIDEExplorerNEWRTTI.ProcessRTTIEvents(Const C : TObject;
+  Const vstEvents : TVirtualStringTree);
 
 Const
   iFirst2Chars = 2;
@@ -405,14 +408,14 @@ Var
   P : TRTTIProperty;
 
 Begin
-  View.Items.BeginUpdate;
+  vstEvents.BeginUpdate;
   Try
     T := FContext.GetType(C.ClassType);
     For P In T.GetProperties Do
       If CompareText(Copy(P.Name, 1, iFirst2Chars), strOn) = 0 Then
-        //: @debug ProcessRTTICoreProperty(C, P, View);
+        ProcessRTTICoreProperty(C, P, vstEvents);
   Finally
-    View.Items.EndUpdate;
+    vstEvents.EndUpdate;
   End;
 End;
 

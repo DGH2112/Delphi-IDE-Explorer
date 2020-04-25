@@ -3,7 +3,7 @@
   This module contains the explorer form interface.
 
   @Date    25 Apr 2020
-  @Version 4.966
+  @Version 4.981
   @Author  David Hoyle
 
   @done    Add a progress bar
@@ -48,7 +48,6 @@ Type
     tabNewProperties: TTabSheet;
     tabFields: TTabSheet;
     tabEvents: TTabSheet;
-    lvEvents: TListView;
     tabMethods: TTabSheet;
     ilScope: TImageList;
     vstComponentTree: TVirtualStringTree;
@@ -58,6 +57,7 @@ Type
     vstFields: TVirtualStringTree;
     vstMethods: TVirtualStringTree;
     vstProperties: TVirtualStringTree;
+    vstEvents: TVirtualStringTree;
     Procedure BuildFormComponentTree(Sender: TObject);
     procedure edtComponentFilterChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -507,6 +507,7 @@ Begin
   vstFields.NodeDataSize := SizeOf(TDIEFieldData);
   vstMethods.NodeDataSize := SizeOf(TDIEMethodData);
   vstProperties.NodeDataSize := SizeOf(TDIEPropertyData);
+  vstEvents.NodeDataSize := SizeOf(TDIEPropertyData);
 End;
 
 (**
@@ -768,7 +769,7 @@ Begin
     vstFields.Clear;
     vstMethods.Clear;
     vstProperties.Clear;
-    lvEvents.Clear;
+    vstEvents.Clear;
     lvOldProperties.Clear;
     If Assigned(Node) Then
       Begin
@@ -778,7 +779,7 @@ Begin
             TIDEExplorerNEWRTTI.ProcessObjectFields(NodeData.FObject, vstFields, FProgressMgr);
             TIDEExplorerNEWRTTI.ProcessObjectMethods(NodeData.FObject, vstMethods, FProgressMgr);
             TIDEExplorerNEWRTTI.ProcessObjectProperties(NodeData.FObject, vstProperties, FProgressMgr);
-            TIDEExplorerNEWRTTI.ProcessObject(NodeData.FObject, lvEvents, FProgressMgr);
+            TIDEExplorerNEWRTTI.ProcessObjectEvents(NodeData.FObject, vstEvents, FProgressMgr);
             FProgressMgr.Update(strFindingOLDProperties);
             TIDEExplorerOLDRTTI.ProcessOldProperties(lvOldProperties, NodeData.FObject);
           End;
