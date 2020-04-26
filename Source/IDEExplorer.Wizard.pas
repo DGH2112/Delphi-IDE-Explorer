@@ -3,8 +3,8 @@
   This module contains a Delphi IDE wizard that displays a tree view of the
   Delphi IDEs published interface.
 
-  @Date    19 Apr 2020
-  @Version 2.077
+  @Date    26 Apr 2020
+  @Version 2.078
   @Author  David Hoyle
 
 **)
@@ -83,7 +83,7 @@ Function InitWizard(Const BorlandIDEServices : IBorlandIDEServices;
   var Terminate: TWizardTerminateProc) : Boolean; StdCall; //FI:O804
 
 Begin
-  { $IFDEF CODESITE}CodeSite.TraceMethod('InitWizard', tmoTiming);{ $ENDIF}
+  {$IFDEF CODESITE}CodeSite.TraceMethod('InitWizard', tmoTiming);{$ENDIF}
   Result := Assigned(BorlandIDEServices);
   If Result Then
     RegisterProc(TDGHIDEExplorer.Create);

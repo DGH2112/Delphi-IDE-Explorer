@@ -3,8 +3,8 @@
   This module contains simple types for use throughout the plug-in.
 
   @Author  David Hoyle
-  @Version 1.201
-  @Date    25 Apr 2020
+  @Version 1.334
+  @Date    26 Apr 2020
   
 **)
 Unit IDEExplorer.Types;
@@ -74,6 +74,25 @@ Type
   End;
   (** A pointer to the above structure. **)
   PDIEPropertyData = ^TDIEPropertyData;
+
+  (** A record to describe the data in the Property treeview. **)
+  TDIEHierarchyData = Record
+    FQualifiedName   : String;
+    FImageIndex      : Integer;
+  End;
+  (** A pointer to the above structure. **)
+  PDIEHierarchyData = ^TDIEHierarchyData;
+
+  (** A record to describe the data in the Property treeview. **)
+  TDIEOLDPropertyData = Record
+    FQualifiedName   : String;
+    FType            : String;
+    FKind            : String;
+    FImageIndex      : Integer;
+    FValue           : String;
+  End;
+  (** A pointer to the above structure. **)
+  PDIEOLDPropertyData = ^TDIEOLDPropertyData;
 
 Implementation
 

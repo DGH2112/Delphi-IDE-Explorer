@@ -30,7 +30,7 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
     Top = 0
     Width = 636
     Height = 479
-    ActivePage = tabEvents
+    ActivePage = TabSheet1
     Align = alClient
     TabOrder = 1
     object tabFields: TTabSheet
@@ -43,7 +43,13 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
         Height = 448
         Align = alClient
         Header.AutoSizeIndex = 0
+        Header.Font.Charset = DEFAULT_CHARSET
+        Header.Font.Color = clWindowText
+        Header.Font.Height = -13
+        Header.Font.Name = 'MS Sans Serif'
+        Header.Font.Style = []
         Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible]
+        Header.ParentFont = False
         HintMode = hmTooltip
         Images = ilScope
         ParentShowHint = False
@@ -103,7 +109,13 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
         Height = 448
         Align = alClient
         Header.AutoSizeIndex = 0
+        Header.Font.Charset = DEFAULT_CHARSET
+        Header.Font.Color = clWindowText
+        Header.Font.Height = -13
+        Header.Font.Name = 'MS Sans Serif'
+        Header.Font.Style = []
         Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible]
+        Header.ParentFont = False
         HintMode = hmTooltip
         Images = ilScope
         ParentShowHint = False
@@ -115,7 +127,6 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
         OnFreeNode = vstMethodsFreeNode
         OnGetText = vstMethodsGetText
         OnGetImageIndex = vstMethodsGetImageIndex
-        ExplicitHeight = 240
         Columns = <
           item
             Position = 0
@@ -149,8 +160,14 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
         Height = 448
         Align = alClient
         Header.AutoSizeIndex = 0
+        Header.Font.Charset = DEFAULT_CHARSET
+        Header.Font.Color = clWindowText
+        Header.Font.Height = -13
+        Header.Font.Name = 'MS Sans Serif'
+        Header.Font.Style = []
         Header.Height = 23
         Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible]
+        Header.ParentFont = False
         HintMode = hmTooltip
         Images = ilScope
         ParentShowHint = False
@@ -162,7 +179,6 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
         OnFreeNode = vstPropertiesFreeNode
         OnGetText = vstPropertiesGetText
         OnGetImageIndex = vstPropertiesGetImageIndex
-        ExplicitHeight = 240
         Columns = <
           item
             Position = 0
@@ -211,8 +227,14 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
         Height = 448
         Align = alClient
         Header.AutoSizeIndex = 0
+        Header.Font.Charset = DEFAULT_CHARSET
+        Header.Font.Color = clWindowText
+        Header.Font.Height = -13
+        Header.Font.Name = 'MS Sans Serif'
+        Header.Font.Style = []
         Header.Height = 23
         Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible]
+        Header.ParentFont = False
         HintMode = hmTooltip
         Images = ilScope
         ParentShowHint = False
@@ -224,7 +246,6 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
         OnFreeNode = vstPropertiesFreeNode
         OnGetText = vstPropertiesGetText
         OnGetImageIndex = vstPropertiesGetImageIndex
-        ExplicitHeight = 192
         Columns = <
           item
             Position = 0
@@ -265,49 +286,78 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
     end
     object TabSheet2: TTabSheet
       Caption = '&Hierarchies'
-      object tvHierarchies: TTreeView
+      object vstHierarchies: TVirtualStringTree
         Left = 0
         Top = 0
         Width = 628
         Height = 448
         Align = alClient
+        Header.AutoSizeIndex = 0
+        Header.Font.Charset = DEFAULT_CHARSET
+        Header.Font.Color = clWindowText
+        Header.Font.Height = -13
+        Header.Font.Name = 'MS Sans Serif'
+        Header.Font.Style = []
+        Header.MainColumn = -1
+        Header.ParentFont = False
         Images = ilTreeImages
-        Indent = 19
-        ReadOnly = True
         TabOrder = 0
+        OnFreeNode = vstHierarchiesFreeNode
+        OnGetText = vstHierarchiesGetText
+        OnGetImageIndex = vstHierarchiesGetImageIndex
+        Columns = <>
       end
     end
     object TabSheet1: TTabSheet
       Caption = '&Old Properties'
-      object lvOldProperties: TListView
+      object vstOLDProperties: TVirtualStringTree
         Left = 0
         Top = 0
         Width = 628
         Height = 448
         Align = alClient
+        Header.AutoSizeIndex = -1
+        Header.Font.Charset = DEFAULT_CHARSET
+        Header.Font.Color = clWindowText
+        Header.Font.Height = -13
+        Header.Font.Name = 'MS Sans Serif'
+        Header.Font.Style = []
+        Header.Height = 23
+        Header.MainColumn = 1
+        Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible]
+        Header.ParentFont = False
+        HintMode = hmTooltip
+        Images = ilScope
+        ParentShowHint = False
+        ShowHint = True
+        StateImages = ilTypeKindImages
+        TabOrder = 0
+        TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+        TreeOptions.SelectionOptions = [toFullRowSelect]
+        OnFreeNode = vstOLDPropertiesFreeNode
+        OnGetText = vstOLDPropertiesGetText
+        OnGetImageIndex = vstOLDPropertiesGetImageIndex
         Columns = <
           item
-            Caption = 'Property'
+            Position = 0
             Width = 100
+            WideText = 'Qualified Name'
           end
           item
-            Caption = 'Type'
+            Position = 1
             Width = 100
+            WideText = 'Type'
           end
           item
-            Caption = 'Kind'
-            Width = 75
+            Position = 2
+            Width = 100
+            WideText = 'Kind'
           end
           item
-            Caption = 'Value'
-            Width = 125
+            Position = 3
+            Width = 100
+            WideText = 'Value'
           end>
-        HideSelection = False
-        ReadOnly = True
-        RowSelect = True
-        SmallImages = ilTypeKindImages
-        TabOrder = 0
-        ViewStyle = vsReport
       end
     end
   end

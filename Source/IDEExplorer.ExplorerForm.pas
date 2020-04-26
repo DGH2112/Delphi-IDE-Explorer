@@ -2,8 +2,8 @@
 
   This module contains the explorer form interface.
 
-  @Date    25 Apr 2020
-  @Version 4.981
+  @Date    26 Apr 2020
+  @Version 5.357
   @Author  David Hoyle
 
   @done    Add a progress bar
@@ -43,8 +43,6 @@ Type
     pgcPropertiesMethodsAndEvents: TPageControl;
     TabSheet1: TTabSheet;
     TabSheet2: TTabSheet;
-    lvOldProperties: TListView;
-    tvHierarchies: TTreeView;
     tabNewProperties: TTabSheet;
     tabFields: TTabSheet;
     tabEvents: TTabSheet;
@@ -58,6 +56,8 @@ Type
     vstMethods: TVirtualStringTree;
     vstProperties: TVirtualStringTree;
     vstEvents: TVirtualStringTree;
+    vstHierarchies: TVirtualStringTree;
+    vstOLDProperties: TVirtualStringTree;
     Procedure BuildFormComponentTree(Sender: TObject);
     procedure edtComponentFilterChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -78,10 +78,20 @@ Type
       Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: TImageIndex);
     procedure vstFieldsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex; TextType:
       TVSTTextType; var CellText: string);
+    procedure vstHierarchiesFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure vstHierarchiesGetImageIndex(Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind;
+      Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: TImageIndex);
+    procedure vstHierarchiesGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
+      TextType: TVSTTextType; var CellText: string);
     procedure vstMethodsFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure vstMethodsGetImageIndex(Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind;
       Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: TImageIndex);
     procedure vstMethodsGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
+      TextType: TVSTTextType; var CellText: string);
+    procedure vstOLDPropertiesFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
+    procedure vstOLDPropertiesGetImageIndex(Sender: TBaseVirtualTree; Node: PVirtualNode; Kind:
+      TVTImageKind; Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: TImageIndex);
+    procedure vstOLDPropertiesGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
       TextType: TVSTTextType; var CellText: string);
     procedure vstPropertiesFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure vstPropertiesGetImageIndex(Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind;
@@ -111,6 +121,7 @@ Uses
   {$IFDEF DEBUG}
   CodeSiteLogging,
   {$ENDIF DEBUG}
+  TypInfo,
   ToolsAPI,
   Registry,
   RegularExpressions,
@@ -155,7 +166,8 @@ ResourceString
   strHeritage = 'Heritage';
 
 Var
-  PNode: TTreeNode;
+  PNode: PVirtualNode;
+  PNodeData: PDIEHierarchyData;
   NodeData : PDIEObjectData;
   ClassRef: TClass;
   strList: TStringList;
@@ -163,37 +175,35 @@ Var
 
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'BuildComponentHeritage', tmoTiming);{$ENDIF}
-  tvHierarchies.Items.BeginUpdate;
-  Try
-    tvHierarchies.Items.Clear;
-    If Assigned(Node) Then
-      Begin
-        NodeData := vstComponentTree.GetNodeData(Node);
-        If Assigned(Nodedata.FObject) Then
-          Begin
-            ClassRef := TComponent(NodeData.FObject).ClassType;
-            strList := TStringList.Create;
-            Try
-              While Assigned(ClassRef) Do
-                Begin
-                  strList.Insert(0, ClassRef.ClassName);
-                  ClassRef := ClassRef.ClassParent;
-                End;
-              PNode := tvHierarchies.Items.AddChild(Nil, strHeritage);
-              For i := 0 To strList.Count - 1 Do
-                Begin
-                  PNode := tvHierarchies.Items.AddChild(PNode, strList[i]);
-                  PNode.ImageIndex := Integer(tiPackage);
-                  PNode.SelectedIndex := Integer(tiPackage);
-                End;
-            Finally
-              strList.Free;
-            End;
+  If Assigned(Node) Then
+    Begin
+      NodeData := vstComponentTree.GetNodeData(Node);
+      If Assigned(Nodedata.FObject) Then
+        Begin
+          ClassRef := TComponent(NodeData.FObject).ClassType;
+          strList := TStringList.Create;
+          Try
+            While Assigned(ClassRef) Do
+              Begin
+                strList.Insert(0, ClassRef.ClassName);
+                ClassRef := ClassRef.ClassParent;
+              End;
+            PNode := vstHierarchies.AddChild(Nil);
+            PNodeData := vstHierarchies.GetNodeData(PNode);
+            PNodeData.FQualifiedName := strHeritage;
+            PNodeData.FImageIndex := Integer(tiApplication);
+            For i := 0 To strList.Count - 1 Do
+              Begin
+                PNode := vstHierarchies.AddChild(PNode);
+                PNodeData := vstHierarchies.GetNodeData(PNode);
+                PNodeData.FQualifiedName := strList[i];
+                PNodeData.FImageIndex := Integer(tiPackage);
+              End;
+          Finally
+            strList.Free;
           End;
-      End;
-  Finally
-    tvHierarchies.Items.EndUpdate;
-  End;
+        End;
+    End;
 End;
 
 (**
@@ -336,7 +346,8 @@ ResourceString
   strParentage = 'Parentage';
 
 Var
-  PNode: TTreeNode;
+  PNode: PVirtualNode;
+  PNodeData : PDIEHierarchyData;
   NodeData : PDIEObjectData;
   Parent: TWinControl;
   slList: TStringList;
@@ -344,37 +355,36 @@ Var
 
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'BuildParentHeritage', tmoTiming);{$ENDIF}
-  tvHierarchies.Items.BeginUpdate;
-  Try
-    If Assigned(Node) Then
-      Begin
-        NodeData := vstComponentTree.GetNodeData(Node);
-        If Assigned(NodeData.FObject) And (TObject(NodeData.FObject) Is TWinControl) Then
-          Begin
-            Parent := TWinControl(NodeData.FObject).Parent;
-            slList := TStringList.Create;
-            Try
-              slList.Add(TWinControl(NodeData.FObject).Name + ' : ' + TWinControl(NodeData.FObject).ClassName);
-              While Parent <> Nil Do
-                Begin
-                  slList.Insert(0, Parent.Name + ' : ' + Parent.ClassName);
-                  Parent := Parent.Parent;
-                End;
-              PNode := tvHierarchies.Items.AddChild(Nil, strParentage);
-              For i := 0 To slList.Count - 1 Do
-                Begin
-                  PNode := tvHierarchies.Items.AddChild(PNode, slList[i]);
-                  PNode.ImageIndex := Integer(tiPackage);
-                  PNode.SelectedIndex := Integer(tiPackage);
-                End;
-            Finally
-              slList.Free;
-            End;
+  If Assigned(Node) Then
+    Begin
+      NodeData := vstComponentTree.GetNodeData(Node);
+      If Assigned(NodeData.FObject) And (TObject(NodeData.FObject) Is TWinControl) Then
+        Begin
+          Parent := TWinControl(NodeData.FObject).Parent;
+          slList := TStringList.Create;
+          Try
+            slList.Add(TWinControl(NodeData.FObject).Name + ' : ' + TWinControl(NodeData.FObject).ClassName);
+            While Parent <> Nil Do
+              Begin
+                slList.Insert(0, Parent.Name + ' : ' + Parent.ClassName);
+                Parent := Parent.Parent;
+              End;
+            PNode := vstHierarchies.AddChild(Nil);
+            PNodeData := vstHierarchies.GetNodeData(PNode);
+            PNodeData.FQualifiedName := strParentage;
+            PNodeData.FImageIndex := Integer(tiApplication);
+            For i := 0 To slList.Count - 1 Do
+              Begin
+                PNode := vstHierarchies.AddChild(PNode);
+                PNodeData := vstHierarchies.GetNodeData(PNode);
+                PNodeData.FQualifiedName := slList[i];
+                PNodeData.FImageIndex := Integer(tiPackage);
+              End;
+          Finally
+            slList.Free;
           End;
-      End;
-  Finally
-    tvHierarchies.Items.EndUpdate;
-  End;
+        End;
+    End;
 End;
 
 (**
@@ -508,6 +518,8 @@ Begin
   vstMethods.NodeDataSize := SizeOf(TDIEMethodData);
   vstProperties.NodeDataSize := SizeOf(TDIEPropertyData);
   vstEvents.NodeDataSize := SizeOf(TDIEPropertyData);
+  vstHierarchies.NodeDataSize := SizeOf(TDIEHierarchyData);
+  vstOLDProperties.NodeDataSize := SizeOf(TDIEOLDPropertyData);
 End;
 
 (**
@@ -770,7 +782,8 @@ Begin
     vstMethods.Clear;
     vstProperties.Clear;
     vstEvents.Clear;
-    lvOldProperties.Clear;
+    vstHierarchies.Clear;
+    vstOldProperties.Clear;
     If Assigned(Node) Then
       Begin
         NodeData := vstComponentTree.GetNodeData(Node);
@@ -781,13 +794,18 @@ Begin
             TIDEExplorerNEWRTTI.ProcessObjectProperties(NodeData.FObject, vstProperties, FProgressMgr);
             TIDEExplorerNEWRTTI.ProcessObjectEvents(NodeData.FObject, vstEvents, FProgressMgr);
             FProgressMgr.Update(strFindingOLDProperties);
-            TIDEExplorerOLDRTTI.ProcessOldProperties(lvOldProperties, NodeData.FObject);
+            TIDEExplorerOLDRTTI.ProcessOldProperties(NodeData.FObject, vstOLDProperties);
           End;
       End;
     FProgressMgr.Update(strBuildingHierarachies);
-    BuildComponentHeritage(Node);
-    BuildParentHeritage(Node);
-    tvHierarchies.FullExpand;
+    vstHierarchies.BeginUpdate;
+    Try
+      BuildComponentHeritage(Node);
+      BuildParentHeritage(Node);
+      vstHierarchies.FullExpand;
+    Finally
+      vstHierarchies.EndUpdate;
+    End;
   Finally
     FProgressMgr.Hide;
   End;
@@ -959,6 +977,79 @@ End;
 
 (**
 
+  This is an on free event handler for the Hierarchies treeview.
+
+  @precon  None.
+  @postcon Finalises the managed types in the treeview node.
+
+  @param   Sender as a TBaseVirtualTree
+  @param   Node   as a PVirtualNode
+
+**)
+Procedure TDGHIDEExplorerForm.vstHierarchiesFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
+
+Var
+  NodeData : PDIEHierarchyData;
+  
+Begin
+  NodeData := Sender.GetNodeData(Node);
+  FInalize(NodeData^);
+End;
+
+(**
+
+  This is an on Get Image Index event handler for the Hierarchies treeview.
+
+  @precon  None.
+  @postcon Returns the indexes for the State and image indexes.
+
+  @param   Sender     as a TBaseVirtualTree
+  @param   Node       as a PVirtualNode
+  @param   Kind       as a TVTImageKind
+  @param   Column     as a TColumnIndex
+  @param   Ghosted    as a Boolean as a reference
+  @param   ImageIndex as a TImageIndex as a reference
+
+**)
+Procedure TDGHIDEExplorerForm.vstHierarchiesGetImageIndex(Sender: TBaseVirtualTree; Node: PVirtualNode;
+  Kind: TVTImageKind; Column: TColumnIndex; Var Ghosted: Boolean; Var ImageIndex: TImageIndex);
+
+Var
+  NodeData : PDIEHierarchyData;
+  
+Begin
+  NodeData := Sender.GetNodeData(Node);
+  If Kind In [ikNormal..ikSelected] Then
+    ImageIndex := NodeData.FImageIndex;
+End;
+
+(**
+
+  This is an on get text event handler for the Hierarchies treeview.
+
+  @precon  None.
+  @postcon Provide the correct text for the hierachy / Parentage from the nodes record.
+
+  @param   Sender   as a TBaseVirtualTree
+  @param   Node     as a PVirtualNode
+  @param   Column   as a TColumnIndex
+  @param   TextType as a TVSTTextType
+  @param   CellText as a String as a reference
+
+**)
+Procedure TDGHIDEExplorerForm.vstHierarchiesGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
+  Column: TColumnIndex; TextType: TVSTTextType; Var CellText: String);
+
+Var
+  NodeData : PDIEHierarchyData;
+  
+Begin
+  NodeData := Sender.GetNodeData(Node);
+  CellText := NodeData.FQualifiedName;
+End;
+
+(**
+
   This is an on free event handler for the Methods treeview.
 
   @precon  None.
@@ -1054,6 +1145,94 @@ End;
   @param   Node   as a PVirtualNode
 
 **)
+Procedure TDGHIDEExplorerForm.vstOLDPropertiesFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
+
+Var
+  NodeData : PDIEOLDPropertyData;
+  
+Begin
+  NodeData := Sender.GetNodeData(Node);
+  FInalize(NodeData^);
+End;
+
+(**
+
+  This is an on Get Image Index event handler for the Propeties treeview.
+
+  @precon  None.
+  @postcon Returns the indexes for the State and image indexes.
+
+  @param   Sender     as a TBaseVirtualTree
+  @param   Node       as a PVirtualNode
+  @param   Kind       as a TVTImageKind
+  @param   Column     as a TColumnIndex
+  @param   Ghosted    as a Boolean as a reference
+  @param   ImageIndex as a TImageIndex as a reference
+
+**)
+Procedure TDGHIDEExplorerForm.vstOLDPropertiesGetImageIndex(Sender: TBaseVirtualTree; Node:
+  PVirtualNode; Kind: TVTImageKind; Column: TColumnIndex; Var Ghosted: Boolean; Var ImageIndex:
+  TImageIndex);
+
+Var
+  NodeData : PDIEOLDPropertyData;
+  
+Begin
+  NodeData := Sender.GetNodeData(Node);
+  If Column = 0 Then
+  If Column = 0 Then
+    Case Kind Of
+      ikNormal,
+      ikSelected,
+      ikOverlay:  ImageIndex := Integer(mvPublished);
+      ikState:    ImageIndex := NodeData.FImageIndex;
+    End;
+End;
+
+(**
+
+  This is an on get text event handler for the Properties treeview.
+
+  @precon  None.
+  @postcon Provide the correct text for the properties from the nodes record.
+
+  @param   Sender   as a TBaseVirtualTree
+  @param   Node     as a PVirtualNode
+  @param   Column   as a TColumnIndex
+  @param   TextType as a TVSTTextType
+  @param   CellText as a String as a reference
+
+**)
+Procedure TDGHIDEExplorerForm.vstOLDPropertiesGetText(Sender: TBaseVirtualTree; Node: PVirtualNode;
+  Column: TColumnIndex; TextType: TVSTTextType; Var CellText: String);
+
+Type
+  TDIEPropertyFields = (pfQualifiedName, pfType, pfKind, pfValue);
+  
+Var
+  NodeData : PDIEOLDPropertyData;
+  
+Begin
+  NodeData := Sender.GetNodeData(Node);
+  Case TDIEPropertyFields(Column) Of
+    pfQualifiedName: CellText := NodeData.FQualifiedName;
+    pfType:          CellText := NodeData.FType;  
+    pfKind:          CellText := NodeData.FKind;  
+    pfValue:         CellText := NodeData.FValue;  
+  End;
+End;
+
+(**
+
+  This is an on free event handler for the Properties treeview.
+
+  @precon  None.
+  @postcon Finalises the managed types in the treeview node.
+
+  @param   Sender as a TBaseVirtualTree
+  @param   Node   as a PVirtualNode
+
+**)
 Procedure TDGHIDEExplorerForm.vstPropertiesFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
 
 Var
@@ -1118,7 +1297,7 @@ Type
   
 Var
   NodeData : PDIEPropertyData;
-  
+
 Begin
   NodeData := Sender.GetNodeData(Node);
   Case TDIEPropertyFields(Column) Of
