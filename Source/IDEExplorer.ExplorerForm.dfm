@@ -25,342 +25,6 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
     ExplicitLeft = 439
     ExplicitTop = -8
   end
-  object pgcPropertiesMethodsAndEvents: TPageControl
-    Left = 188
-    Top = 0
-    Width = 636
-    Height = 479
-    ActivePage = TabSheet1
-    Align = alClient
-    TabOrder = 1
-    object tabFields: TTabSheet
-      Caption = '&Fields'
-      ImageIndex = 3
-      object vstFields: TVirtualStringTree
-        Left = 0
-        Top = 0
-        Width = 628
-        Height = 448
-        Align = alClient
-        Header.AutoSizeIndex = 0
-        Header.Font.Charset = DEFAULT_CHARSET
-        Header.Font.Color = clWindowText
-        Header.Font.Height = -13
-        Header.Font.Name = 'MS Sans Serif'
-        Header.Font.Style = []
-        Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible]
-        Header.ParentFont = False
-        HintMode = hmTooltip
-        Images = ilScope
-        ParentShowHint = False
-        ShowHint = True
-        StateImages = ilTypeKindImages
-        TabOrder = 0
-        TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-        TreeOptions.SelectionOptions = [toFullRowSelect]
-        OnFreeNode = vstFieldsFreeNode
-        OnGetText = vstFieldsGetText
-        OnGetImageIndex = vstFieldsGetImageIndex
-        Columns = <
-          item
-            Position = 0
-            Width = 100
-            WideText = 'Scope'
-          end
-          item
-            Position = 1
-            Width = 100
-            WideText = 'Qualified Name'
-          end
-          item
-            Position = 2
-            Width = 100
-            WideText = 'Type'
-          end
-          item
-            Position = 3
-            Width = 100
-            WideText = 'Offset'
-          end
-          item
-            Position = 4
-            Width = 100
-            WideText = 'Kind'
-          end
-          item
-            Position = 5
-            Width = 100
-            WideText = 'Size'
-          end
-          item
-            Position = 6
-            Width = 100
-            WideText = 'Value'
-          end>
-      end
-    end
-    object tabMethods: TTabSheet
-      Caption = '&Methods'
-      ImageIndex = 5
-      object vstMethods: TVirtualStringTree
-        Left = 0
-        Top = 0
-        Width = 628
-        Height = 448
-        Align = alClient
-        Header.AutoSizeIndex = 0
-        Header.Font.Charset = DEFAULT_CHARSET
-        Header.Font.Color = clWindowText
-        Header.Font.Height = -13
-        Header.Font.Name = 'MS Sans Serif'
-        Header.Font.Style = []
-        Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible]
-        Header.ParentFont = False
-        HintMode = hmTooltip
-        Images = ilScope
-        ParentShowHint = False
-        ShowHint = True
-        StateImages = ilTypeKindImages
-        TabOrder = 0
-        TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-        TreeOptions.SelectionOptions = [toFullRowSelect]
-        OnFreeNode = vstMethodsFreeNode
-        OnGetText = vstMethodsGetText
-        OnGetImageIndex = vstMethodsGetImageIndex
-        Columns = <
-          item
-            Position = 0
-            Width = 100
-            WideText = 'Scope'
-          end
-          item
-            Position = 1
-            Width = 100
-            WideText = 'Qualified Name'
-          end
-          item
-            Position = 2
-            Width = 100
-            WideText = 'Type'
-          end
-          item
-            Position = 3
-            Width = 100
-            WideText = 'Signature'
-          end>
-      end
-    end
-    object tabNewProperties: TTabSheet
-      Caption = '&Properties'
-      ImageIndex = 2
-      object vstProperties: TVirtualStringTree
-        Left = 0
-        Top = 0
-        Width = 628
-        Height = 448
-        Align = alClient
-        Header.AutoSizeIndex = 0
-        Header.Font.Charset = DEFAULT_CHARSET
-        Header.Font.Color = clWindowText
-        Header.Font.Height = -13
-        Header.Font.Name = 'MS Sans Serif'
-        Header.Font.Style = []
-        Header.Height = 23
-        Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible]
-        Header.ParentFont = False
-        HintMode = hmTooltip
-        Images = ilScope
-        ParentShowHint = False
-        ShowHint = True
-        StateImages = ilTypeKindImages
-        TabOrder = 0
-        TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-        TreeOptions.SelectionOptions = [toFullRowSelect]
-        OnFreeNode = vstPropertiesFreeNode
-        OnGetText = vstPropertiesGetText
-        OnGetImageIndex = vstPropertiesGetImageIndex
-        Columns = <
-          item
-            Position = 0
-            Width = 66
-            WideText = 'Scope'
-          end
-          item
-            Position = 1
-            Width = 132
-            WideText = 'Qualified Name'
-          end
-          item
-            Position = 2
-            Width = 64
-            WideText = 'Type'
-          end
-          item
-            Position = 3
-            Width = 75
-            WideText = 'Access'
-          end
-          item
-            Position = 4
-            Width = 100
-            WideText = 'Kind'
-          end
-          item
-            Position = 5
-            Width = 73
-            WideText = 'Size'
-          end
-          item
-            Position = 6
-            Width = 61
-            WideText = 'Value'
-          end>
-      end
-    end
-    object tabEvents: TTabSheet
-      Caption = '&Events'
-      ImageIndex = 4
-      object vstEvents: TVirtualStringTree
-        Left = 0
-        Top = 0
-        Width = 628
-        Height = 448
-        Align = alClient
-        Header.AutoSizeIndex = 0
-        Header.Font.Charset = DEFAULT_CHARSET
-        Header.Font.Color = clWindowText
-        Header.Font.Height = -13
-        Header.Font.Name = 'MS Sans Serif'
-        Header.Font.Style = []
-        Header.Height = 23
-        Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible]
-        Header.ParentFont = False
-        HintMode = hmTooltip
-        Images = ilScope
-        ParentShowHint = False
-        ShowHint = True
-        StateImages = ilTypeKindImages
-        TabOrder = 0
-        TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-        TreeOptions.SelectionOptions = [toFullRowSelect]
-        OnFreeNode = vstPropertiesFreeNode
-        OnGetText = vstPropertiesGetText
-        OnGetImageIndex = vstPropertiesGetImageIndex
-        Columns = <
-          item
-            Position = 0
-            Width = 66
-            WideText = 'Scope'
-          end
-          item
-            Position = 1
-            Width = 132
-            WideText = 'Qualified Name'
-          end
-          item
-            Position = 2
-            Width = 64
-            WideText = 'Type'
-          end
-          item
-            Position = 3
-            Width = 75
-            WideText = 'Access'
-          end
-          item
-            Position = 4
-            Width = 100
-            WideText = 'Kind'
-          end
-          item
-            Position = 5
-            Width = 73
-            WideText = 'Size'
-          end
-          item
-            Position = 6
-            Width = 61
-            WideText = 'Value'
-          end>
-      end
-    end
-    object TabSheet2: TTabSheet
-      Caption = '&Hierarchies'
-      object vstHierarchies: TVirtualStringTree
-        Left = 0
-        Top = 0
-        Width = 628
-        Height = 448
-        Align = alClient
-        Header.AutoSizeIndex = 0
-        Header.Font.Charset = DEFAULT_CHARSET
-        Header.Font.Color = clWindowText
-        Header.Font.Height = -13
-        Header.Font.Name = 'MS Sans Serif'
-        Header.Font.Style = []
-        Header.MainColumn = -1
-        Header.ParentFont = False
-        Images = ilTreeImages
-        TabOrder = 0
-        OnFreeNode = vstHierarchiesFreeNode
-        OnGetText = vstHierarchiesGetText
-        OnGetImageIndex = vstHierarchiesGetImageIndex
-        Columns = <>
-      end
-    end
-    object TabSheet1: TTabSheet
-      Caption = '&Old Properties'
-      object vstOLDProperties: TVirtualStringTree
-        Left = 0
-        Top = 0
-        Width = 628
-        Height = 448
-        Align = alClient
-        Header.AutoSizeIndex = -1
-        Header.Font.Charset = DEFAULT_CHARSET
-        Header.Font.Color = clWindowText
-        Header.Font.Height = -13
-        Header.Font.Name = 'MS Sans Serif'
-        Header.Font.Style = []
-        Header.Height = 23
-        Header.MainColumn = 1
-        Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible]
-        Header.ParentFont = False
-        HintMode = hmTooltip
-        Images = ilScope
-        ParentShowHint = False
-        ShowHint = True
-        StateImages = ilTypeKindImages
-        TabOrder = 0
-        TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
-        TreeOptions.SelectionOptions = [toFullRowSelect]
-        OnFreeNode = vstOLDPropertiesFreeNode
-        OnGetText = vstOLDPropertiesGetText
-        OnGetImageIndex = vstOLDPropertiesGetImageIndex
-        Columns = <
-          item
-            Position = 0
-            Width = 100
-            WideText = 'Qualified Name'
-          end
-          item
-            Position = 1
-            Width = 100
-            WideText = 'Type'
-          end
-          item
-            Position = 2
-            Width = 100
-            WideText = 'Kind'
-          end
-          item
-            Position = 3
-            Width = 100
-            WideText = 'Value'
-          end>
-      end
-    end
-  end
   object pnlTreePanel: TPanel
     Left = 0
     Top = 0
@@ -370,10 +34,11 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
     BevelOuter = bvNone
     TabOrder = 0
     object vstComponentTree: TVirtualStringTree
-      Left = 0
-      Top = 24
-      Width = 185
-      Height = 455
+      AlignWithMargins = True
+      Left = 3
+      Top = 33
+      Width = 179
+      Height = 443
       Align = alClient
       Header.AutoSizeIndex = 0
       Header.MainColumn = -1
@@ -385,16 +50,395 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
       OnFreeNode = vstComponentTreeFreeNode
       OnGetText = vstComponentTreeGetText
       OnGetImageIndex = vstComponentTreeGetImageIndex
+      ExplicitLeft = 0
+      ExplicitTop = 24
+      ExplicitWidth = 185
+      ExplicitHeight = 455
       Columns = <>
     end
     object edtComponentFilter: TEdit
-      Left = 0
-      Top = 0
-      Width = 185
+      AlignWithMargins = True
+      Left = 3
+      Top = 3
+      Width = 179
       Height = 24
       Align = alTop
       TabOrder = 0
       OnChange = edtComponentFilterChange
+      ExplicitLeft = 0
+      ExplicitTop = 0
+      ExplicitWidth = 185
+    end
+  end
+  object pnlPME: TPanel
+    Left = 188
+    Top = 0
+    Width = 636
+    Height = 479
+    Align = alClient
+    BevelOuter = bvNone
+    TabOrder = 1
+    ExplicitLeft = 328
+    ExplicitTop = 240
+    ExplicitWidth = 185
+    ExplicitHeight = 41
+    object pgcPropertiesMethodsAndEvents: TPageControl
+      AlignWithMargins = True
+      Left = 3
+      Top = 33
+      Width = 630
+      Height = 443
+      ActivePage = TabSheet1
+      Align = alClient
+      TabOrder = 0
+      ExplicitLeft = 496
+      ExplicitTop = 0
+      ExplicitWidth = 328
+      ExplicitHeight = 479
+      object tabFields: TTabSheet
+        Caption = '&Fields'
+        ImageIndex = 3
+        object vstFields: TVirtualStringTree
+          Left = 0
+          Top = 0
+          Width = 622
+          Height = 412
+          Align = alClient
+          Header.AutoSizeIndex = 0
+          Header.Font.Charset = DEFAULT_CHARSET
+          Header.Font.Color = clWindowText
+          Header.Font.Height = -13
+          Header.Font.Name = 'MS Sans Serif'
+          Header.Font.Style = []
+          Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible]
+          Header.ParentFont = False
+          HintMode = hmTooltip
+          Images = ilScope
+          ParentShowHint = False
+          ShowHint = True
+          StateImages = ilTypeKindImages
+          TabOrder = 0
+          TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+          TreeOptions.SelectionOptions = [toFullRowSelect]
+          OnFreeNode = vstFieldsFreeNode
+          OnGetText = vstFieldsGetText
+          OnGetImageIndex = vstFieldsGetImageIndex
+          Columns = <
+            item
+              Position = 0
+              Width = 100
+              WideText = 'Scope'
+            end
+            item
+              Position = 1
+              Width = 100
+              WideText = 'Qualified Name'
+            end
+            item
+              Position = 2
+              Width = 100
+              WideText = 'Type'
+            end
+            item
+              Position = 3
+              Width = 100
+              WideText = 'Offset'
+            end
+            item
+              Position = 4
+              Width = 100
+              WideText = 'Kind'
+            end
+            item
+              Position = 5
+              Width = 100
+              WideText = 'Size'
+            end
+            item
+              Position = 6
+              Width = 100
+              WideText = 'Value'
+            end>
+        end
+      end
+      object tabMethods: TTabSheet
+        Caption = '&Methods'
+        ImageIndex = 5
+        object vstMethods: TVirtualStringTree
+          Left = 0
+          Top = 0
+          Width = 622
+          Height = 412
+          Align = alClient
+          Header.AutoSizeIndex = 0
+          Header.Font.Charset = DEFAULT_CHARSET
+          Header.Font.Color = clWindowText
+          Header.Font.Height = -13
+          Header.Font.Name = 'MS Sans Serif'
+          Header.Font.Style = []
+          Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible]
+          Header.ParentFont = False
+          HintMode = hmTooltip
+          Images = ilScope
+          ParentShowHint = False
+          ShowHint = True
+          StateImages = ilTypeKindImages
+          TabOrder = 0
+          TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+          TreeOptions.SelectionOptions = [toFullRowSelect]
+          OnFreeNode = vstMethodsFreeNode
+          OnGetText = vstMethodsGetText
+          OnGetImageIndex = vstMethodsGetImageIndex
+          Columns = <
+            item
+              Position = 0
+              Width = 100
+              WideText = 'Scope'
+            end
+            item
+              Position = 1
+              Width = 100
+              WideText = 'Qualified Name'
+            end
+            item
+              Position = 2
+              Width = 100
+              WideText = 'Type'
+            end
+            item
+              Position = 3
+              Width = 100
+              WideText = 'Signature'
+            end>
+        end
+      end
+      object tabNewProperties: TTabSheet
+        Caption = '&Properties'
+        ImageIndex = 2
+        object vstProperties: TVirtualStringTree
+          Left = 0
+          Top = 0
+          Width = 622
+          Height = 412
+          Align = alClient
+          Header.AutoSizeIndex = 0
+          Header.Font.Charset = DEFAULT_CHARSET
+          Header.Font.Color = clWindowText
+          Header.Font.Height = -13
+          Header.Font.Name = 'MS Sans Serif'
+          Header.Font.Style = []
+          Header.Height = 23
+          Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible]
+          Header.ParentFont = False
+          HintMode = hmTooltip
+          Images = ilScope
+          ParentShowHint = False
+          ShowHint = True
+          StateImages = ilTypeKindImages
+          TabOrder = 0
+          TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+          TreeOptions.SelectionOptions = [toFullRowSelect]
+          OnFreeNode = vstPropertiesFreeNode
+          OnGetText = vstPropertiesGetText
+          OnGetImageIndex = vstPropertiesGetImageIndex
+          Columns = <
+            item
+              Position = 0
+              Width = 66
+              WideText = 'Scope'
+            end
+            item
+              Position = 1
+              Width = 132
+              WideText = 'Qualified Name'
+            end
+            item
+              Position = 2
+              Width = 64
+              WideText = 'Type'
+            end
+            item
+              Position = 3
+              Width = 75
+              WideText = 'Access'
+            end
+            item
+              Position = 4
+              Width = 100
+              WideText = 'Kind'
+            end
+            item
+              Position = 5
+              Width = 73
+              WideText = 'Size'
+            end
+            item
+              Position = 6
+              Width = 61
+              WideText = 'Value'
+            end>
+        end
+      end
+      object tabEvents: TTabSheet
+        Caption = '&Events'
+        ImageIndex = 4
+        object vstEvents: TVirtualStringTree
+          Left = 0
+          Top = 0
+          Width = 622
+          Height = 412
+          Align = alClient
+          Header.AutoSizeIndex = 0
+          Header.Font.Charset = DEFAULT_CHARSET
+          Header.Font.Color = clWindowText
+          Header.Font.Height = -13
+          Header.Font.Name = 'MS Sans Serif'
+          Header.Font.Style = []
+          Header.Height = 23
+          Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible]
+          Header.ParentFont = False
+          HintMode = hmTooltip
+          Images = ilScope
+          ParentShowHint = False
+          ShowHint = True
+          StateImages = ilTypeKindImages
+          TabOrder = 0
+          TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+          TreeOptions.SelectionOptions = [toFullRowSelect]
+          OnFreeNode = vstPropertiesFreeNode
+          OnGetText = vstPropertiesGetText
+          OnGetImageIndex = vstPropertiesGetImageIndex
+          Columns = <
+            item
+              Position = 0
+              Width = 66
+              WideText = 'Scope'
+            end
+            item
+              Position = 1
+              Width = 132
+              WideText = 'Qualified Name'
+            end
+            item
+              Position = 2
+              Width = 64
+              WideText = 'Type'
+            end
+            item
+              Position = 3
+              Width = 75
+              WideText = 'Access'
+            end
+            item
+              Position = 4
+              Width = 100
+              WideText = 'Kind'
+            end
+            item
+              Position = 5
+              Width = 73
+              WideText = 'Size'
+            end
+            item
+              Position = 6
+              Width = 61
+              WideText = 'Value'
+            end>
+        end
+      end
+      object TabSheet2: TTabSheet
+        Caption = '&Hierarchies'
+        object vstHierarchies: TVirtualStringTree
+          Left = 0
+          Top = 0
+          Width = 622
+          Height = 412
+          Align = alClient
+          Header.AutoSizeIndex = 0
+          Header.Font.Charset = DEFAULT_CHARSET
+          Header.Font.Color = clWindowText
+          Header.Font.Height = -13
+          Header.Font.Name = 'MS Sans Serif'
+          Header.Font.Style = []
+          Header.MainColumn = -1
+          Header.ParentFont = False
+          Images = ilTreeImages
+          TabOrder = 0
+          OnFreeNode = vstHierarchiesFreeNode
+          OnGetText = vstHierarchiesGetText
+          OnGetImageIndex = vstHierarchiesGetImageIndex
+          Columns = <>
+        end
+      end
+      object TabSheet1: TTabSheet
+        Caption = '&Old Properties'
+        ExplicitWidth = 320
+        ExplicitHeight = 448
+        object vstOLDProperties: TVirtualStringTree
+          Left = 0
+          Top = 0
+          Width = 622
+          Height = 412
+          Align = alClient
+          Header.AutoSizeIndex = -1
+          Header.Font.Charset = DEFAULT_CHARSET
+          Header.Font.Color = clWindowText
+          Header.Font.Height = -13
+          Header.Font.Name = 'MS Sans Serif'
+          Header.Font.Style = []
+          Header.Height = 23
+          Header.MainColumn = 1
+          Header.Options = [hoColumnResize, hoDrag, hoShowSortGlyphs, hoVisible]
+          Header.ParentFont = False
+          HintMode = hmTooltip
+          Images = ilScope
+          ParentShowHint = False
+          ShowHint = True
+          StateImages = ilTypeKindImages
+          TabOrder = 0
+          TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
+          TreeOptions.SelectionOptions = [toFullRowSelect]
+          OnFreeNode = vstOLDPropertiesFreeNode
+          OnGetText = vstOLDPropertiesGetText
+          OnGetImageIndex = vstOLDPropertiesGetImageIndex
+          ExplicitWidth = 320
+          ExplicitHeight = 448
+          Columns = <
+            item
+              Position = 0
+              Width = 100
+              WideText = 'Qualified Name'
+            end
+            item
+              Position = 1
+              Width = 100
+              WideText = 'Type'
+            end
+            item
+              Position = 2
+              Width = 100
+              WideText = 'Kind'
+            end
+            item
+              Position = 3
+              Width = 100
+              WideText = 'Value'
+            end>
+        end
+      end
+    end
+    object edtPropertyFilter: TEdit
+      AlignWithMargins = True
+      Left = 3
+      Top = 3
+      Width = 630
+      Height = 24
+      Align = alTop
+      TabOrder = 1
+      OnChange = edtPropertyFilterChange
+      ExplicitLeft = 256
+      ExplicitTop = 232
+      ExplicitWidth = 121
     end
   end
   object ilTreeImages: TImageList

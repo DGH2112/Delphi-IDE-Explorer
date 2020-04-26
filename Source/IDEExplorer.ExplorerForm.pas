@@ -3,12 +3,12 @@
   This module contains the explorer form interface.
 
   @Date    26 Apr 2020
-  @Version 5.357
+  @Version 6.138
   @Author  David Hoyle
 
   @done    Add a progress bar
   @done    Add a filter for the treeview.
-  @todo    Add a filter for the fileds, methods, properties, etc.
+  @done    Add a filter for the fileds, methods, properties, etc.
 
 **)
 Unit IDEExplorer.ExplorerForm;
@@ -58,8 +58,11 @@ Type
     vstEvents: TVirtualStringTree;
     vstHierarchies: TVirtualStringTree;
     vstOLDProperties: TVirtualStringTree;
+    pnlPME: TPanel;
+    edtPropertyFilter: TEdit;
     Procedure BuildFormComponentTree(Sender: TObject);
     procedure edtComponentFilterChange(Sender: TObject);
+    procedure edtPropertyFilterChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -101,6 +104,7 @@ Type
   Strict Private
     FProgressMgr               : IDIEProgressMgr;
     FLastComponentFilterUpdate : Cardinal;
+    FLastViewFilterUpdate      : Cardinal;
   Strict Protected
     Procedure GetComponents(Const Node: PVirtualNode; Const Component: TComponent);
     Procedure LoadSettings;
@@ -108,6 +112,7 @@ Type
     Procedure BuildComponentHeritage(Const Node : PVirtualNode);
     Procedure BuildParentHeritage(Const Node : PVirtualNode);
     Procedure FilterComponents;
+    procedure FilterView(const vstView: TVirtualStringTree; const iColumnIndex: Integer);
   Public
     Class Procedure Execute;
   End;
@@ -405,6 +410,22 @@ End;
 
 (**
 
+  This is an on change event handler for the ViewFilter edit control.
+
+  @precon  None.
+  @postcon Updates the last time the filter was changed.
+
+  @param   Sender as a TObject
+
+**)
+Procedure TDGHIDEExplorerForm.edtPropertyFilterChange(Sender: TObject);
+
+Begin
+  FLastViewFilterUpdate := GetTickCount;
+End;
+
+(**
+
   This method displays the form modally.
 
   @precon  None.
@@ -494,6 +515,56 @@ Begin
       End;
   Finally
     vstComponentTree.EndUpdate;
+  End;
+End;
+
+(**
+
+  This method filters the given view using the indexed text column.
+
+  @precon  vstView must be a valid instance.
+  @postcon The view is filtered.
+
+  @param   vstView      as a TVirtualStringTree as a constant
+  @param   iColumnIndex as an Integer as a constant
+
+**)
+procedure TDGHIDEExplorerForm.FilterView(const vstView: TVirtualStringTree; const iColumnIndex: Integer);
+
+ResourceString
+  strRegularExpressionError = 'Regular Expression Error';
+
+Var
+  FilterRegEx: TRegEx;
+  N: PVirtualNode;
+  strFilterText : String;
+
+Begin
+  strFilterText := edtPropertyFilter.Text;
+  Try
+    If strFilterText.Length > 0 Then
+      FilterRegEx := TRegEx.Create(strFilterText, [roIgnoreCase, roCompiled, roSingleLine]);
+  Except
+    On E : ERegularExpressionError Do
+      Begin
+        TaskMessageDlg(strRegularExpressionError, E.Message, mtError, [mbOK], 0);
+        edtPropertyFilter.SetFocus;
+        Exit;
+      End;
+  End;
+  vstView.BeginUpdate;
+  Try
+    N := vstView.GetFirst;
+    While Assigned(N) Do
+      Begin
+        If strFilterText.Length > 0 Then
+          vstView.IsVisible[N] := FilterRegEx.IsMatch(vstView.Text[N, iColumnIndex])
+        Else
+          vstView.IsVisible[N] := True;
+        N := vstView.GetNext(N);
+      End;
+  Finally
+    vstView.EndUpdate;
   End;
 End;
 
@@ -719,6 +790,21 @@ Begin
     Finally
       FLastComponentFilterUpdate := 0;
     End;
+  If (FLastViewFilterUpdate > 0) And (GetTickCount > FLastViewFilterUpdate + iUpdateInterval) Then
+    Try
+      tmFilterTimer.Enabled := False;
+      Try
+        FilterView(vstFields, 1);
+        FilterView(vstMethods, 1);
+        FilterView(vstProperties, 1);
+        FilterView(vstEvents, 1);
+        FilterView(vstOLDProperties, 0);
+      Finally
+        tmFilterTimer.Enabled := True;
+      End;
+    Finally
+      FLastViewFilterUpdate := 0;
+    End;
 End;
 
 (**
@@ -784,6 +870,7 @@ Begin
     vstEvents.Clear;
     vstHierarchies.Clear;
     vstOldProperties.Clear;
+    edtPropertyFilter.Clear;
     If Assigned(Node) Then
       Begin
         NodeData := vstComponentTree.GetNodeData(Node);
