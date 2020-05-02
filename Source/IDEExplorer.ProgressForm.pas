@@ -80,19 +80,27 @@ Procedure TfrmDIEProgressForm.FormCreate(Sender: TObject);
 
 {$IFDEF DXE102}
 Var
+  {$IFDEF DXE104}
+  ITS : IOTAIDEThemingServices;
+  {$ELSE}
   ITS : IOTAIDEThemingServices250;
+  {$ENDIF DXE104}
 {$ENDIF DXE102}
   
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'FormCreate', tmoTiming);{$ENDIF}
-{$IFDEF DXE102}
+  {$IFDEF DXE102}
+  {$IFDEF DXE104}
+  If Supports(BorlandIDEServices, IOTAIDEThemingServices, ITS) Then
+  {$ELSE}
   If Supports(BorlandIDEServices, IOTAIDEThemingServices250, ITS) Then
+  {$ENDIF DXE104}
     If ITS.IDEThemingEnabled Then
       Begin
         ITS.RegisterFormClass(TfrmDIEProgressForm);
         ITS.ApplyTheme(Self);
       End;
-{$ENDIF DXE102}
+  {$ENDIF DXE102}
 End;
 
 (**

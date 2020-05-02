@@ -27,7 +27,6 @@ Uses
   ComCtrls,
   ExtCtrls,
   ImgList,
-  System.ImageList,
   Vcl.StdCtrls,
   VirtualTrees,
   IDEExplorer.Interfaces;
@@ -437,15 +436,23 @@ Class Procedure TDGHIDEExplorerForm.Execute;
 Var
   F : TDGHIDEExplorerForm;
   {$IFDEF DXE102}
+  {$IFDEF DXE104}
+  ITS : IOTAIDEThemingServices;
+  {$ELSE}
   ITS : IOTAIDEThemingServices250;
-  {$ENDIF}
+  {$ENDIF DXE104}
+  {$ENDIF DXE102}
   
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod('TDGHIDEExplorerForm.Execute', tmoTiming);{$ENDIF}
   F := TDGHIDEExplorerForm.Create(Application.MainForm);
   Try
     {$IFDEF DXE102}
+    {$IFDEF DXE104}
+    If Supports(BorlandIDEServices, IOTAIDEThemingServices, ITS) Then
+    {$ELSE}
     If Supports(BorlandIDEServices, IOTAIDEThemingServices250, ITS) Then
+    {$ENDIF DXE104}
       If ITS.IDEThemingEnabled Then
         Begin
           ITS.RegisterFormClass(TDGHIDEExplorerForm);

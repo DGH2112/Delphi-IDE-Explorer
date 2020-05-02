@@ -138,7 +138,7 @@ End;
 Constructor TDGHIDEExplorer.Create;
 
 Begin
-  { $IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{ $ENDIF}
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   Inherited Create;
   InstallSplashScreen;
   FAboutBoxIndex := AddAboutBoxEntry;
@@ -155,7 +155,7 @@ End;
 Destructor TDGHIDEExplorer.Destroy;
 
 Begin
-  { $IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{ $ENDIF}
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
   RemoveAboutBoxEntry(FAboutBoxIndex);
   Inherited Destroy;
 End;
