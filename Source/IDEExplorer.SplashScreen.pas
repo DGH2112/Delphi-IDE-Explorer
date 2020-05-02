@@ -3,7 +3,7 @@
   This module contains code to install a splash screen entry into the RAD Studio IDE.
 
   @Author  David Hoyle
-  @Version 1.091
+  @Version 1.099
   @Date    02 May 2020
   
   @license
@@ -38,6 +38,7 @@ Implementation
 Uses
   ToolsAPI,
   SysUtils,
+  DateUtils,
   Forms,
   Windows,
   IDEExplorer.Types,
@@ -81,12 +82,15 @@ Begin
         ]),
         bmSplashScreen,
         {$IFDEF DEBUG} True {$ELSE} False {$ENDIF},
-        Format(strSplashScreenBuild, [
-          VersionInfo.iMajor, 
-          VersionInfo.iMinor, 
-          VersionInfo.iBugfix, 
-          VersionInfo.iBuild
-        ])
+        Format(
+          strSplashScreenBuild, [
+            YearOf(Now()),
+            VersionInfo.iMajor, 
+            VersionInfo.iMinor, 
+            VersionInfo.iBugfix, 
+            VersionInfo.iBuild
+          ]
+        )
       );
     End;
 End;

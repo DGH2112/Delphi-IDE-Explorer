@@ -3,7 +3,7 @@
   This module contains methods to adding and removing the About Box Entry in the IDEs about dialogue.
 
   @Author  David Hoyle
-  @Version 1.091
+  @Version 1.095
   @Date    02 May 2020
   
   @license
@@ -39,6 +39,7 @@ Implementation
 Uses
   ToolsAPI,
   SysUtils,
+  DateUtils,
   Forms,
   Windows,
   IDEExplorer.Types,
@@ -88,6 +89,7 @@ Begin
       bmAboutBox,
       {$IFDEF DEBUG} True {$ELSE} False {$ENDIF},
       Format(strSplashScreenBuild, [
+        YearOf(Now()),
         VersionInfo.iMajor, 
         VersionInfo.iMinor, 
         VersionInfo.iBugfix, 
