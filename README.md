@@ -6,7 +6,7 @@ Version:  2.3
 
 Date:     02 May 2020
 
-Web Page: (Delphi IDE Explorer)[http://www.davidghoyle.co.uk/WordPress/?page_id=928]
+Web Page: [Delphi IDE Explorer](http://www.davidghoyle.co.uk/WordPress/?page_id=928)
 
 ## Overview
 
