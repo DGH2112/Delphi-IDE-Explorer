@@ -4,8 +4,28 @@
   IDE forms and components.
 
   @Author  David Hoyle
-  @Version 1.0
-  @Date    01 Dec 2018
+  @Version 1.009
+  @Date    02 May 2020
+
+  @license
+
+    IDE Explorer - an Opren Tools API plug-in for RAD Studio which allows you to
+    browse the internals of the RAD Studio IDE.
+    
+    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/Delphi-IDE-Explorer)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
   @nocheck EmptyBeginEnd
   
@@ -30,7 +50,10 @@ uses
   IDEExplorer.Types in 'Source\IDEExplorer.Types.pas',
   IDEExplorer.ResourceStrings in 'Source\IDEExplorer.ResourceStrings.pas',
   IDEExplorer.Constants in 'Source\IDEExplorer.Constants.pas',
-  IDEExplorer.AboutBox in 'Source\IDEExplorer.AboutBox.pas';
+  IDEExplorer.AboutBox in 'Source\IDEExplorer.AboutBox.pas',
+  IDEExplorer.Interfaces in 'Source\IDEExplorer.Interfaces.pas',
+  IDEExplorer.ProgressMgr in 'Source\IDEExplorer.ProgressMgr.pas',
+  IDEExplorer.ProgressForm in 'Source\IDEExplorer.ProgressForm.pas' {frmDIEProgressForm};
 
 {$R *.res}
 

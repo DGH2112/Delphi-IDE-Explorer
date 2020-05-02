@@ -6,13 +6,25 @@ EnabledVersionInfo=1
 IncludeInProject=1
 CompileWithBRCC32=0
 MajorVer=2
-MinorVer=0
-ReleaseVer=2
-BuildVer=575
+MinorVer=3
+ReleaseVer=0
+BuildVer=678
 ResourceName=IDEExplorerITHVerInfo
 WarnBefore=0
 WarnAfter=0
 SaveModifiedFilesBeforeZipping=1
+IncBuild.Make.Release=1
+IncBuild.Build.Release=1
+IncBuild.Check.Release=0
+IncBuild.MakeUnit.Release=0
+IncBuild.Make.Base=1
+IncBuild.Build.Base=1
+IncBuild.Check.Base=0
+IncBuild.MakeUnit.Base=0
+IncBuild.Make.Debug=1
+IncBuild.Build.Debug=1
+IncBuild.Check.Debug=0
+IncBuild.MakeUnit.Debug=0
 
 [Zipping]
 Enabled=1
@@ -23,12 +35,12 @@ ExclusionFiles=
 [VersionInfo]
 CompanyName=Season's Fall Music
 FileDescription=IDEExplorer: A package to allow you to browser the internal fields, properties, methods and events of the IDE
-FileVersion=2.0.2.575
+FileVersion=2.3.0.678
 InternalName=IDEExplorer
 LegalCopyright=Season's Fall Music
 LegalTrademarks=Season's Fall Music
 OriginalFilename=IDEExplorer
 ProductName=IDEExplorer
-ProductVersion=2.0b
+ProductVersion=2.3
 Comments=IDEExplorer: A package to allow you to browser the internal fields, properties, methods and events of the IDE
 

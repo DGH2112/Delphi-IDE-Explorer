@@ -1,13 +1,12 @@
- IDE Explorer
-==============
+# IDE Explorer
 
-Author: David Hoyle
+Author:   David Hoyle
 
-Version: 2.2
+Version:  2.3
 
-Date: 01 Dec 2018
+Date:     02 May 2020
 
-Web Page: (Delphi IDE Explorer)[http://www.davidghoyle.co.uk/WordPress/?page_id=928]
+Web Page: [Delphi IDE Explorer](http://www.davidghoyle.co.uk/WordPress/?page_id=928)
 
 ## Overview
 

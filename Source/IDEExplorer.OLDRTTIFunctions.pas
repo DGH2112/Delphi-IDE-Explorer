@@ -3,8 +3,28 @@
   This module contains the old style RTTI information.
 
   @Author  David Hoyle
-  @Version 1.0
-  @Date    01 Dec 2018
+  @Version 1.717
+  @Date    02 May 2020
+
+  @license
+
+    IDE Explorer - an Opren Tools API plug-in for RAD Studio which allows you to
+    browse the internals of the RAD Studio IDE.
+    
+    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/Delphi-IDE-Explorer)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 **)
 Unit IDEExplorer.OLDRTTIFunctions;
@@ -15,7 +35,8 @@ Interface
 
 Uses
   TypInfo,
-  ComCtrls;
+  ComCtrls,
+  VirtualTrees;
 
 Type
   (** A record to encapsulate the OLD RTTI property methods. **)
@@ -29,8 +50,11 @@ Type
       Const PropListItem: PPropInfo): String; Static;
     Class Function PropertyValueSet(Const ptrData: Pointer;
       Const PropListItem: PPropInfo): String; Static;
+    Class Function  PropertyValue(Const PropListItem : PPropInfo;
+      Const ptrData : TObject): String; Static;
   Public
-    Class Procedure ProcessOldProperties(Const View : TListView; Const ptrData : Pointer); Static;
+    Class Procedure ProcessOldProperties(Const ptrData : Pointer;
+      Const vstOLDProperties : TVirtualStringTree); Static;
   End;
 
 Implementation
@@ -40,24 +64,82 @@ Uses
   Classes,
   Graphics,
   Controls,
-  IDEExplorer.Functions;
+  IDEExplorer.Functions, IDEExplorer.Types;
 
 (**
 
-  This procedure exrtacts the old published properties of the given object pointer and adds a list view 
+  This procedure exrtacts the old published properties of the given object pointer and adds a treeview 
   item for each property.
 
   @precon  View and ptrData must be valid instances.
-  @postcon A list view item is added to the view for eac npublished property of the object.
+  @postcon A treeview item is added to the view for each published property of the object.
 
-  @nometric LongMethod
-
-  @param   View    as a TListView as a constant
-  @param   ptrData as a Pointer as a constant
+  @param   ptrData          as a Pointer as a constant
+  @param   vstOLDProperties as a TVirtualStringTree as a constant
 
 **)
-Class Procedure TIDEExplorerOLDRTTI.ProcessOldProperties(Const View : TListView;
-  Const ptrData : Pointer);
+Class Procedure TIDEExplorerOLDRTTI.ProcessOldProperties(Const ptrData : Pointer;
+  Const vstOLDProperties : TVirtualStringTree);
+
+ResourceString
+  strUnknown = '< Unknown >';
+
+Const
+  strTColor = 'TColor';
+  strTCursor = 'TCursor';
+
+Var
+  Node : PVirtualNode;
+  NodeData : PDIEOLDPropertyData;
+  i: Integer;
+  PropList: PPropList;
+  iNumOfProps: Integer;
+
+Begin
+  vstOLDProperties.BeginUpdate;
+  Try
+    GetMem(PropList, SizeOf(TPropList));
+    Try
+      iNumOfProps := GetPropList(TComponent(ptrData).ClassInfo, tkAny, PropList);
+      For i := 0 To iNumOfProps - 1 Do
+        Begin
+          Node := vstOLDProperties.AddChild(Nil);
+          NodeData := vstOLDProperties.GetNodeData(Node);
+          NodeData.FQualifiedName := String(PropList[i].Name);
+          NodeData.FType := String(PropList[i].PropType^.Name);
+          NodeData.FImageIndex := Integer(PropList[i].PropType^.Kind);
+          NodeData.FKind := GetEnumName(TypeInfo(TTypeKind), Ord(PropList[i].PropType^.Kind));
+          If Not FatalValue(UTF8ToString(PropList[i].Name)) Then
+            NodeData.FValue := PropertyValue(PropList[i], ptrData)
+          Else
+            NodeData.FValue := strUnknown;
+          If NodeData.FType = strTColor Then
+            NodeData.FValue := ColorToString(StrToInt(NodeData.FValue));
+          If NodeData.FType = strTCursor Then
+            NodeData.FValue := CursorToString(StrToInt(NodeData.FValue));
+        End;
+    Finally
+      FreeMem(PropList, SizeOf(TPropList));
+    End;
+  Finally
+    vstOLDProperties.EndUpdate;
+  End;
+End;
+
+(**
+
+  This method returns a string representation of the given property`s value.
+
+  @precon  PropListIte, and ptrData must be valid instances.
+  @postcon A string represetation of the property is returned.
+
+  @param   PropListItem as a PPropInfo as a constant
+  @param   ptrData      as a TObject as a constant
+  @return  a String
+
+**)
+Class Function TIDEExplorerOLDRTTI.PropertyValue(Const PropListItem : PPropInfo;
+  Const ptrData : TObject): String;
 
 ResourceString
   strUnknown = '< Unknown >';
@@ -72,78 +154,37 @@ ResourceString
   strProcedure = '< Procedure >';
   strMISSINGPROPERTYHANDLER = '< MISSING PROPERTY HANDLER >';
 
-Const
-  strTColor = 'TColor';
-  strTCursor = 'TCursor';
-  iPropertyValueIndex = 2;
-
-Var
-  lvItem : TListItem;
-  i: Integer;
-  PropList: PPropList;
-  iNumOfProps: Integer;
-
 Begin
-  View.Items.BeginUpdate;
-  Try
-    View.Items.Clear;
-    GetMem(PropList, SizeOf(TPropList));
-    Try
-      iNumOfProps := GetPropList(TComponent(ptrData).ClassInfo, tkAny, PropList);
-      For i := 0 To iNumOfProps - 1 Do
-        Begin
-          lvItem := View.Items.Add;
-          lvItem.Caption := String(PropList[i].Name);
-          lvItem.SubItems.Add(String(PropList[i].PropType^.Name));
-          lvItem.ImageIndex := Integer(PropList[i].PropType^.Kind);
-          lvItem.SubItems.Add(GetEnumName(TypeInfo(TTypeKind),
-            Ord(PropList[i].PropType^.Kind)));
-          If Not FatalValue(UTF8ToString(PropList[i].Name)) Then
-            Case PropList[i].PropType^.Kind Of
-              tkUnknown:     lvItem.SubItems.Add(strUnknown);
-              tkInteger:     lvItem.SubItems.Add(PropertyValueInteger(ptrData, PropList[i]));
-              tkChar:        lvItem.SubItems.Add(strUnhandled);
-              tkEnumeration: lvItem.SubItems.Add(PropertyValueEnumerate(ptrData, PropList[i]));
-              tkFloat:       lvItem.SubItems.Add(FloatToStr(GetFloatProp(TObject(ptrData), PropList[i])));
-              tkString:      lvItem.SubItems.Add(GetStrProp(TObject(ptrData), PropList[i]));
-              tkSet:         lvItem.SubItems.Add(PropertyValueSet(ptrData, PropList[i]));
-              tkClass:       lvItem.SubItems.Add(strClass);
-              tkMethod:      lvItem.SubItems.Add(PropertyValueMethod(ptrData, PropList[i]));
-              tkWChar:       lvItem.SubItems.Add(strUnhandled);
-              tkLString:     lvItem.SubItems.Add(GetStrProp(TObject(ptrData), PropList[i]));
-              tkWString:     lvItem.SubItems.Add(GetWideStrProp(TObject(ptrData), PropList[i]));
-              tkVariant:     lvItem.SubItems.Add(strVariant);
-              tkArray:       lvItem.SubItems.Add(strArray);
-              tkRecord:      lvItem.SubItems.Add(strRecord);
-              tkInterface:   lvItem.SubItems.Add(strInteface {GetInterfaceProp(TObject(ptrData), PropList[i])});
-              tkInt64:       lvItem.SubItems.Add(IntToStr(GetInt64Prop(TObject(ptrData), PropList[i])));
-              tkDynArray:    lvItem.SubItems.Add(Format('%x', [GetDynArrayProp(TObject(ptrData), PropList[i])]));
-              {$IFDEF DXE102}
-              tkUString:     lvItem.SubItems.Add(GetStrProp(TObject(ptrData), PropList[i]));
-              {$ELSE}
-              tkUString:     lvItem.SubItems.Add(GetUnicodeStrProp(TObject(ptrData), PropList[i]));
-              {$ENDIF}
-              tkClassRef:    lvItem.SubItems.Add(strClassRef);
-              tkPointer:     lvItem.SubItems.Add(strPointer);
-              tkProcedure:   lvItem.SubItems.Add(strProcedure);
-            Else
-              lvItem.SubItems.Add(strMISSINGPROPERTYHANDLER);
-            End
-          Else
-            lvItem.SubItems.Add(strUnknown);
-          If lvItem.SubItems[0] = strTColor Then
-            lvItem.SubItems[iPropertyValueIndex] :=
-              ColorToString(StrToInt(lvItem.SubItems[iPropertyValueIndex]));
-          If lvItem.SubItems[0] = strTCursor Then
-            lvItem.SubItems[iPropertyValueIndex] :=
-              CursorToString(StrToInt(lvItem.SubItems[iPropertyValueIndex]));
-        End;
-    Finally
-      FreeMem(PropList, SizeOf(TPropList));
-    End;
-  Finally
-    View.Items.EndUpdate;
-  End;
+  Case PropListItem.PropType^.Kind Of
+    tkUnknown:     Result := strUnknown;
+    tkInteger:     Result := PropertyValueInteger(ptrData, PropListItem);
+    tkChar:        Result := strUnhandled;
+    tkEnumeration: Result := PropertyValueEnumerate(ptrData, PropListItem);
+    tkFloat:       Result := FloatToStr(GetFloatProp(TObject(ptrData), PropListItem));
+    tkString:      Result := GetStrProp(TObject(ptrData), PropListItem);
+    tkSet:         Result := PropertyValueSet(ptrData, PropListItem);
+    tkClass:       Result := strClass;
+    tkMethod:      Result := PropertyValueMethod(ptrData, PropListItem);
+    tkWChar:       Result := strUnhandled;
+    tkLString:     Result := GetStrProp(TObject(ptrData), PropListItem);
+    tkWString:     Result := GetWideStrProp(TObject(ptrData), PropListItem);
+    tkVariant:     Result := strVariant;
+    tkArray:       Result := strArray;
+    tkRecord:      Result := strRecord;
+    tkInterface:   Result := strInteface {GetInterfaceProp(TObject(ptrData), PropList[i])};
+    tkInt64:       Result := IntToStr(GetInt64Prop(TObject(ptrData), PropListItem));
+    tkDynArray:    Result := Format('%x', [GetDynArrayProp(TObject(ptrData), PropListItem)]);
+    {$IFDEF DXE102}
+    tkUString:     Result := GetStrProp(TObject(ptrData), PropListItem);
+    {$ELSE}
+    tkUString:     Result := GetUnicodeStrProp(TObject(ptrData), PropListItem);
+    {$ENDIF}
+    tkClassRef:    Result := strClassRef;
+    tkPointer:     Result := strPointer;
+    tkProcedure:   Result := strProcedure;
+  Else
+    Result := strMISSINGPROPERTYHANDLER;
+  End
 End;
 
 (**

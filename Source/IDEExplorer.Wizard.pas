@@ -3,9 +3,29 @@
   This module contains a Delphi IDE wizard that displays a tree view of the
   Delphi IDEs published interface.
 
-  @Date    01 Dec 2018
-  @Version 2.0
+  @Date    02 May 2020
+  @Version 2.169
   @Author  David Hoyle
+
+  @license
+
+    IDE Explorer - an Opren Tools API plug-in for RAD Studio which allows you to
+    browse the internals of the RAD Studio IDE.
+    
+    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/Delphi-IDE-Explorer)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 **)
 Unit IDEExplorer.Wizard;
@@ -49,6 +69,9 @@ Exports
 Implementation
 
 Uses
+  {$IFDEF DEBUG}
+  CodeSiteLogging,
+  {$ENDIF DEBUG}
   SysUtils,
   Forms,
   IDEExplorer.SplashScreen,
@@ -80,6 +103,7 @@ Function InitWizard(Const BorlandIDEServices : IBorlandIDEServices;
   var Terminate: TWizardTerminateProc) : Boolean; StdCall; //FI:O804
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod('InitWizard', tmoTiming);{$ENDIF}
   Result := Assigned(BorlandIDEServices);
   If Result Then
     RegisterProc(TDGHIDEExplorer.Create);
@@ -97,6 +121,7 @@ End;
 Procedure Register;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod('Register', tmoTiming);{$ENDIF}
   RegisterPackageWizard(TDGHIDEExplorer.Create);
 End;
 
@@ -113,6 +138,7 @@ End;
 Constructor TDGHIDEExplorer.Create;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Create', tmoTiming);{$ENDIF}
   Inherited Create;
   InstallSplashScreen;
   FAboutBoxIndex := AddAboutBoxEntry;
@@ -129,6 +155,7 @@ End;
 Destructor TDGHIDEExplorer.Destroy;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Destroy', tmoTiming);{$ENDIF}
   RemoveAboutBoxEntry(FAboutBoxIndex);
   Inherited Destroy;
 End;
@@ -144,6 +171,7 @@ End;
 Procedure TDGHIDEExplorer.Execute;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'Execute', tmoTiming);{$ENDIF}
   TDGHIDEExplorerForm.Execute;
 End;
 
@@ -163,6 +191,7 @@ Const
   strDGHIDEExplorer = '.DGH IDE Explorer';
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'GetIDString', tmoTiming);{$ENDIF}
   Result := strDGHIDEExplorer;
 End;
 
@@ -182,6 +211,7 @@ ResourceString
   strIDEExplorer = 'IDE Explorer';
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'GetMenuText', tmoTiming);{$ENDIF}
   Result := strIDEExplorer;
 End;
 
@@ -201,6 +231,7 @@ Const
   strDGHIDEExplorer = 'DGH IDE Explorer';
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'GetName', tmoTiming);{$ENDIF}
   Result := strDGHIDEExplorer;
 End;
 
@@ -217,7 +248,9 @@ End;
 Function TDGHIDEExplorer.GetState: TWizardState;
 
 Begin
+  {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'GetState', tmoTiming);{$ENDIF}
   Result := [wsEnabled];
 End;
 
 End.
+
