@@ -50,10 +50,6 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
       OnFreeNode = vstComponentTreeFreeNode
       OnGetText = vstComponentTreeGetText
       OnGetImageIndex = vstComponentTreeGetImageIndex
-      ExplicitLeft = 0
-      ExplicitTop = 24
-      ExplicitWidth = 185
-      ExplicitHeight = 455
       Columns = <>
     end
     object edtComponentFilter: TEdit
@@ -65,9 +61,6 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
       Align = alTop
       TabOrder = 0
       OnChange = edtComponentFilterChange
-      ExplicitLeft = 0
-      ExplicitTop = 0
-      ExplicitWidth = 185
     end
   end
   object pnlPME: TPanel
@@ -78,10 +71,6 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
     Align = alClient
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitLeft = 328
-    ExplicitTop = 240
-    ExplicitWidth = 185
-    ExplicitHeight = 41
     object pgcPropertiesMethodsAndEvents: TPageControl
       AlignWithMargins = True
       Left = 3
@@ -91,13 +80,13 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
       ActivePage = TabSheet1
       Align = alClient
       TabOrder = 0
-      ExplicitLeft = 496
-      ExplicitTop = 0
-      ExplicitWidth = 328
-      ExplicitHeight = 479
       object tabFields: TTabSheet
         Caption = '&Fields'
         ImageIndex = 3
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object vstFields: TVirtualStringTree
           Left = 0
           Top = 0
@@ -164,6 +153,10 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
       object tabMethods: TTabSheet
         Caption = '&Methods'
         ImageIndex = 5
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object vstMethods: TVirtualStringTree
           Left = 0
           Top = 0
@@ -215,6 +208,10 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
       object tabNewProperties: TTabSheet
         Caption = '&Properties'
         ImageIndex = 2
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object vstProperties: TVirtualStringTree
           Left = 0
           Top = 0
@@ -282,6 +279,10 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
       object tabEvents: TTabSheet
         Caption = '&Events'
         ImageIndex = 4
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object vstEvents: TVirtualStringTree
           Left = 0
           Top = 0
@@ -348,6 +349,10 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
       end
       object TabSheet2: TTabSheet
         Caption = '&Hierarchies'
+        ExplicitLeft = 0
+        ExplicitTop = 0
+        ExplicitWidth = 0
+        ExplicitHeight = 0
         object vstHierarchies: TVirtualStringTree
           Left = 0
           Top = 0
@@ -372,8 +377,6 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
       end
       object TabSheet1: TTabSheet
         Caption = '&Old Properties'
-        ExplicitWidth = 320
-        ExplicitHeight = 448
         object vstOLDProperties: TVirtualStringTree
           Left = 0
           Top = 0
@@ -401,8 +404,6 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
           OnFreeNode = vstOLDPropertiesFreeNode
           OnGetText = vstOLDPropertiesGetText
           OnGetImageIndex = vstOLDPropertiesGetImageIndex
-          ExplicitWidth = 320
-          ExplicitHeight = 448
           Columns = <
             item
               Position = 0
@@ -436,9 +437,6 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
       Align = alTop
       TabOrder = 1
       OnChange = edtPropertyFilterChange
-      ExplicitLeft = 256
-      ExplicitTop = 232
-      ExplicitWidth = 121
     end
   end
   object ilTreeImages: TImageList

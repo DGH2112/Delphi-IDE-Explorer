@@ -30,9 +30,5 @@ object frmDIEProgressForm: TfrmDIEProgressForm
     Margins.Bottom = 10
     Align = alClient
     TabOrder = 0
-    ExplicitLeft = 208
-    ExplicitTop = 48
-    ExplicitWidth = 150
-    ExplicitHeight = 17
   end
 end
