@@ -3,7 +3,7 @@
   This module contains resource strings for use throughout the plug-in.
 
   @Author  David Hoyle
-  @Version 1.118
+  @Version 1.119
   @Date    04 Jun 2020
   
   @license
@@ -36,10 +36,10 @@ ResourceString
   strSplashScreenName = 'IDE Explorer %d.%d%s for %s';
   {$IFDEF DEBUG}
   (** A resource string for the build information on the splash screen **)
-  strSplashScreenBuild = 'David Hoyle (c) %d License GNU GPL3 (DEBUG Build %d.%d.%d.%d)';
+  strSplashScreenBuild = 'David Hoyle (c) 2020 License GNU GPL3 (DEBUG Build %d.%d.%d.%d)';
   {$ELSE}
   (** A resource string for the build information on the splash screen **)
-  strSplashScreenBuild = 'David Hoyle (c) %d License GNU GPL3 (Build %d.%d.%d.%d)';
+  strSplashScreenBuild = 'David Hoyle (c) 2020 License GNU GPL3 (Build %d.%d.%d.%d)';
   {$ENDIF DEBUG}
 
 Implementation
