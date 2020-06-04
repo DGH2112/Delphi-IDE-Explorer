@@ -3,12 +3,8 @@
   This module contains the explorer form interface.
 
   @Date    04 Jun 2020
-  @Version 6.230
+  @Version 6.244
   @Author  David Hoyle
-
-  @done    Add a progress bar
-  @done    Add a filter for the treeview.
-  @done    Add a filter for the fileds, methods, properties, etc.
 
   @license
 

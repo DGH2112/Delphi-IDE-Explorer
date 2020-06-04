@@ -73,8 +73,12 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
       Top = 3
       Width = 179
       Height = 24
+      Hint = 'Enter a regular expression to filter the treeview'
       Align = alTop
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 0
+      TextHint = 'Enter a regular expression to filter the treeview'
       OnChange = edtComponentFilterChange
     end
   end
@@ -98,10 +102,6 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
       object tabFields: TTabSheet
         Caption = '&Fields'
         ImageIndex = 3
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object vstFields: TVirtualStringTree
           Left = 0
           Top = 0
@@ -183,10 +183,6 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
       object tabMethods: TTabSheet
         Caption = '&Methods'
         ImageIndex = 5
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object vstMethods: TVirtualStringTree
           Left = 0
           Top = 0
@@ -253,10 +249,6 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
       object tabNewProperties: TTabSheet
         Caption = '&Properties'
         ImageIndex = 2
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object vstProperties: TVirtualStringTree
           Left = 0
           Top = 0
@@ -339,10 +331,6 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
       object tabEvents: TTabSheet
         Caption = '&Events'
         ImageIndex = 4
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object vstEvents: TVirtualStringTree
           Left = 0
           Top = 0
@@ -424,10 +412,6 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
       end
       object TabSheet2: TTabSheet
         Caption = '&Hierarchies'
-        ExplicitLeft = 0
-        ExplicitTop = 0
-        ExplicitWidth = 0
-        ExplicitHeight = 0
         object vstHierarchies: TVirtualStringTree
           Left = 0
           Top = 0
@@ -539,8 +523,16 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
       Top = 3
       Width = 630
       Height = 24
+      Hint = 
+        'Enter a regular expression to filter the field, method, property' +
+        ' lists...'
       Align = alTop
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 1
+      TextHint = 
+        'Enter a regular expression to filter the field, method, property' +
+        ' lists...'
       OnChange = edtPropertyFilterChange
     end
   end
