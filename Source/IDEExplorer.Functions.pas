@@ -3,15 +3,15 @@
   This module contains common functions to be used throughout the plug-in.
 
   @Author  David Hoyle
-  @Version 1.091
-  @Date    02 May 2020
+  @Version 1.092
+  @Date    04 Jun 2020
   
   @license
 
-    IDE Explorer - an Opren Tools API plug-in for RAD Studio which allows you to
+    IDE Explorer - an Open Tools API plug-in for RAD Studio which allows you to
     browse the internals of the RAD Studio IDE.
-    
-    Copyright (C) 2019  David Hoyle (https://github.com/DGH2112/Delphi-IDE-Explorer)
+
+    Copyright (C) 2020  David Hoyle (https://github.com/DGH2112/Delphi-IDE-Explorer)
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

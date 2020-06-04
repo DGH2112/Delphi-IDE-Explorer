@@ -4,9 +4,29 @@
   definition exists it means that that version of the compiler or high is
   available.
 
-  @Version 1.061
-  @Date    19 Apr 2020
+  @Version 1.151
+  @Date    04 Jun 2020
   @Author  David Hoyle
+
+  @license
+
+    IDE Explorer - an Open Tools API plug-in for RAD Studio which allows you to
+    browse the internals of the RAD Studio IDE.
+
+    Copyright (C) 2020 David Hoyle (https://github.com/DGH2112/Delphi-IDE-Explorer)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 **)
 
@@ -471,7 +491,7 @@
   {$DEFINE DXE103}
 {$ENDIF}
 
-// Embarcadero Delphi XE10.4 Denali (Studio 21.0), Version 27, Package version 270
+// Embarcadero Delphi XE10.4 Sydney (Studio 21.0), Version 27, Package version 270
 {$IFDEF VER340}
   {$DEFINE D0001}
   {$DEFINE D0002}
