@@ -1,5 +1,5 @@
 # IDE Explorer
-
+it is an amazing project ,
 Author:   David Hoyle (davidghoyle@gmail.com / [https://github.com/DGH2112](https://github.com/DGH2112))
 
 Version:  2.3a
