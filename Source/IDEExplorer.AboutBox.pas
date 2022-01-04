@@ -3,8 +3,8 @@
   This module contains methods to adding and removing the About Box Entry in the IDEs about dialogue.
 
   @Author  David Hoyle
-  @Version 1.098
-  @Date    04 Jun 2020
+  @Version 1.213
+  @Date    04 Jan 2022
   
   @license
 
@@ -36,12 +36,18 @@ Interface
 
 Implementation
 
+{$INCLUDE CompilerDefinitions.inc}
+
 Uses
   ToolsAPI,
   SysUtils,
   DateUtils,
   Forms,
+  {$IFDEF RS110}
+  Graphics,
+  {$ELSE}
   Windows,
+  {$ENDIF RS110}
   IDEExplorer.Types,
   IDEExplorer.Functions,
   IDEExplorer.Constants,
@@ -69,38 +75,46 @@ ResourceString
     'elements.';
 
 Var
+  {$IFDEF RS110}
+  AboutBoxBitMap : TBitMap;
+  {$ELSE}
   bmAboutBox : HBITMAP;
-  VersionInfo : TVersionInfo;
+  {$ENDIF RS110}
+  VerInfo : TVersionInfo;
   ABS : IOTAAboutBoxServices;
 
 Begin
   Result := -1;
-  bmAboutBox := LoadBitmap(hInstance, strIDEExplorerSplashScreenBitMap);
-  BuildNumber(VersionInfo);
+  BuildNumber(VerInfo);
   If Supports(BorlandIDEServices, IOTAAboutBoxServices, ABS) Then
-    Result := ABS.AddPluginInfo(
-      Format(strSplashScreenName, [
-        VersionInfo.iMajor, 
-        VersionInfo.iMinor,
-        Copy(strRevision, VersionInfo.iBugFix + 1, 1),
-        Application.Title
-      ]),
-      strExpertsDescription,
-      bmAboutBox,
-      {$IFDEF DEBUG} True {$ELSE} False {$ENDIF},
-      Format(strSplashScreenBuild, [
-        VersionInfo.iMajor, 
-        VersionInfo.iMinor, 
-        VersionInfo.iBugfix, 
-        VersionInfo.iBuild
-      ]),
-      Format(strSKUBuild, [
-        VersionInfo.iMajor, 
-        VersionInfo.iMinor, 
-        VersionInfo.iBugfix, 
-        VersionInfo.iBuild
-      ])
-    );
+    Begin
+      {$IFDEF RS110}
+      AboutBoxBitMap := TBitMap.Create;
+      Try
+        AboutBoxBitMap.LoadFromResourceName(hInstance, strIDEExplorerSplashScreenBitMap);
+        Result := ABS.AddPluginInfo(
+          Format(strSplashScreenName, [VerInfo.iMajor, VerInfo.iMinor, Copy(strRevision, VerInfo.iBugFix + 1, 1), Application.Title]),
+          strExpertsDescription,
+          [AboutBoxBitMap],
+          {$IFDEF DEBUG} True {$ELSE} False {$ENDIF},
+          Format(strSplashScreenBuild, [VerInfo.iMajor, VerInfo.iMinor, VerInfo.iBugfix, VerInfo.iBuild]),
+          Format(strSKUBuild, [VerInfo.iMajor, VerInfo.iMinor, VerInfo.iBugfix, VerInfo.iBuild])
+        );
+      Finally
+        AboutBoxBitMap.Free;
+      End;
+      {$ELSE}
+      bmAboutBox := LoadBitmap(hInstance, strIDEExplorerSplashScreenBitMap);
+      Result := ABS.AddPluginInfo(
+        Format(strSplashScreenName, [VerInfo.iMajor, VerInfo.iMinor, Copy(strRevision, VerInfo.iBugFix + 1, 1), Application.Title]),
+        strExpertsDescription,
+        bmAboutBox,
+        {$IFDEF DEBUG} True {$ELSE} False {$ENDIF},
+        Format(strSplashScreenBuild, [VerInfo.iMajor, VerInfo.iMinor, VerInfo.iBugfix, VerInfo.iBuild]),
+        Format(strSKUBuild, [VerInfo.iMajor, VerInfo.iMinor, VerInfo.iBugfix, VerInfo.iBuild])
+      );
+      {$ENDIF RS110}
+    End;
 End;
 
 (**

@@ -2,8 +2,8 @@
 
   This module contains the explorer form interface.
 
-  @Date    04 Jun 2020
-  @Version 6.244
+  @Date    04 Jan 2022
+  @Version 6.247
   @Author  David Hoyle
 
   @license
@@ -45,7 +45,7 @@ Uses
   ImgList,
   Vcl.StdCtrls,
   VirtualTrees,
-  IDEExplorer.Interfaces;
+  IDEExplorer.Interfaces, System.ImageList;
 
 {$INCLUDE CompilerDefinitions.inc}
 
@@ -451,30 +451,30 @@ Class Procedure TDGHIDEExplorerForm.Execute;
 
 Var
   F : TDGHIDEExplorerForm;
-  {$IFDEF DXE102}
-  {$IFDEF DXE104}
+  {$IFDEF RS102}
+  {$IFDEF RS104}
   ITS : IOTAIDEThemingServices;
   {$ELSE}
   ITS : IOTAIDEThemingServices250;
-  {$ENDIF DXE104}
-  {$ENDIF DXE102}
+  {$ENDIF RS104}
+  {$ENDIF RS102}
   
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod('TDGHIDEExplorerForm.Execute', tmoTiming);{$ENDIF}
   F := TDGHIDEExplorerForm.Create(Application.MainForm);
   Try
-    {$IFDEF DXE102}
-    {$IFDEF DXE104}
+    {$IFDEF RS102}
+    {$IFDEF RS104}
     If Supports(BorlandIDEServices, IOTAIDEThemingServices, ITS) Then
     {$ELSE}
     If Supports(BorlandIDEServices, IOTAIDEThemingServices250, ITS) Then
-    {$ENDIF DXE104}
+    {$ENDIF RS104}
       If ITS.IDEThemingEnabled Then
         Begin
           ITS.RegisterFormClass(TDGHIDEExplorerForm);
           ITS.ApplyTheme(F);
         End;
-    {$ENDIF}
+    {$ENDIF RS102}
     F.ShowModal;
   Finally
     F.Free;
