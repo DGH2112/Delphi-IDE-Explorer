@@ -3,7 +3,7 @@
   This module contains the explorer form interface.
 
   @Date    04 Jan 2022
-  @Version 6.468
+  @Version 6.616
   @Author  David Hoyle
 
   @license
@@ -56,8 +56,8 @@ Type
     splSplitter1: TSplitter;
     ilTypeKindImages: TImageList;
     pgcPropertiesMethodsAndEvents: TPageControl;
-    TabSheet1: TTabSheet;
-    TabSheet2: TTabSheet;
+    tabOLDProperties: TTabSheet;
+    tabHierarchies: TTabSheet;
     tabNewProperties: TTabSheet;
     tabFields: TTabSheet;
     tabEvents: TTabSheet;
@@ -112,6 +112,7 @@ Type
       TVTImageKind; Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: TImageIndex);
     procedure vstOLDPropertiesGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
       TextType: TVSTTextType; var CellText: string);
+    procedure vstPropertiesDblClick(Sender: TObject);
     procedure vstPropertiesFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure vstPropertiesGetImageIndex(Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind;
       Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: TImageIndex);
@@ -170,6 +171,8 @@ Const
   strHeightKey = 'Height';
   (** An INI Key for the width position of the tree view in the dialogue. **)
   strTreeWidthKey = 'TreeWidth';
+  (** A constant for the image index to be used for classes. **)
+  iClassImgIdx = 6;
 
 (**
 
@@ -1030,7 +1033,7 @@ Begin
   ComponentNodeData := vstComponentTree.GetNodeData(Node);
   ComponentNodeData.FText := NodeData.FQualifiedName;
   ComponentNodeData.FObject := NodeData.FObject;
-  ComponentNodeData.FImageIndex := 0;
+  ComponentNodeData.FImageIndex := iClassImgIdx;
   vstComponentTree.Expanded[vstComponentTree.FocusedNode] := True;
   vstComponentTree.FocusedNode := Node;
   vstComponentTree.Selected[vstComponentTree.FocusedNode] := True;
@@ -1370,6 +1373,45 @@ Begin
     pfKind:          CellText := NodeData.FKind;  
     pfValue:         CellText := NodeData.FValue;  
   End;
+End;
+
+(**
+
+  This is an on double click event handler for the property VTV control.
+
+  @precon  None.
+  @postcon Allows the user to drill-down into classes.
+
+  @param   Sender as a TObject
+
+**)
+Procedure TDGHIDEExplorerForm.vstPropertiesDblClick(Sender: TObject);
+
+ResourceString
+  strYouCannotDrillDownOnThisProperty = 'You cannot drill down on this property.';
+
+Var
+  Node: PVirtualNode;
+  NodeData : PDIEPropertyData;
+  ComponentNodeData : PDIEObjectData;
+
+Begin
+  If Not Assigned(vstProperties.FocusedNode) Then
+    Exit;
+  NodeData := vstProperties.GetNodeData(vstProperties.FocusedNode);
+  If Not Assigned(NodeData.FObject) Then
+    Begin
+      MessageDlg(strYouCannotDrillDownOnThisProperty, mtWarning, [mbOK], 0);
+      Exit;
+    End;
+  Node := vstComponentTree.AddChild(vstComponentTree.FocusedNode);
+  ComponentNodeData := vstComponentTree.GetNodeData(Node);
+  ComponentNodeData.FText := NodeData.FQualifiedName;
+  ComponentNodeData.FObject := NodeData.FObject;
+  ComponentNodeData.FImageIndex := iClassImgIdx;
+  vstComponentTree.Expanded[vstComponentTree.FocusedNode] := True;
+  vstComponentTree.FocusedNode := Node;
+  vstComponentTree.Selected[vstComponentTree.FocusedNode] := True;
 End;
 
 (**

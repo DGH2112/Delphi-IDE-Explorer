@@ -4,7 +4,7 @@
   properties and events for various objects pass to the single routine below.
 
   @Author  David Hoyle
-  @Version 2.880
+  @Version 2.898
   @Date    04 Jan 2022
 
   @license
@@ -176,7 +176,7 @@ Begin
               F.FieldType.ToString,
               ValueToString(V)
             ]);
-            NodeData.FImageIndex := -1; //: @debug What to do with this.
+            NodeData.FImageIndex := 6;
             NodeData.FObject := V.AsObject;
             ProcessCoreClass(vstComponents, N, V);
           End;
@@ -395,6 +395,9 @@ Begin
     If Not FatalValue(P.Name) And P.IsReadable Then
       Begin
         V := P.GetValue(C);
+        NodeData.FObject := Nil;
+        If P.PropertyType.TypeKind = tkClass Then
+          NodeData.FObject := V.AsObject;
         If P.IsReadable Then
           NodeData.FValue := ProcessValue(V, P.PropertyType.ToString);
       End;
