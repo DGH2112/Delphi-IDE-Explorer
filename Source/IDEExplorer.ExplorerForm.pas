@@ -3,7 +3,7 @@
   This module contains the explorer form interface.
 
   @Date    04 Jan 2022
-  @Version 6.247
+  @Version 6.252
   @Author  David Hoyle
 
   @license
@@ -155,7 +155,7 @@ Type
   TIDEExplorerTreeImage = (tiApplication, tiDataModule, tiForm, tiPackage, tiForms, tiDataModules);
 
 Const
-  (** This is the root registration jey for this applications settings. **)
+  (** This is the root registration key for this applications settings. **)
   RegKey = '\Software\Seasons Fall';
   (** This is the section name for the applications settings in the registry **)
   SectionName = 'DGH IDE Explorer';
@@ -174,7 +174,7 @@ Const
 
   This method builds a hierarchical list of the components heritage.
 
-  @precon  Node must be a vldi instance.
+  @precon  Node must be a valid instance.
   @postcon The heritage tree is output to the hierarchies tab.
 
   @param   Node as a PVirtualNode as a constant
@@ -231,7 +231,7 @@ End;
   This is the forms on show event. It initialises the tree view.
 
   @precon  None.
-  @postcon Iterates through the forms and datamodules and adds them to the tree view.
+  @postcon Iterates through the forms and data modules and adds them to the tree view.
 
   @param   Sender as a TObject
 
@@ -240,11 +240,11 @@ Procedure TDGHIDEExplorerForm.BuildFormComponentTree(Sender: TObject);
 
   (**
 
-    This method adds a form/datamodule to a root node in the tree and then calls GetComponents to get the
+    This method adds a form/data module to a root node in the tree and then calls GetComponents to get the
     forms components.
 
-    @precon  ParentNode and ScreenForm must be valid instances.
-    @postcon Adds a form/datamodule to a root node in the tree and then calls GetComponents to get the 
+    @precon  ParentNode and Component must be valid instances.
+    @postcon Adds a form/data module to a root node in the tree and then calls GetComponents to get the 
              forms components.
 
     @param   ParentNode as a PVirtualNode as a constant
@@ -274,9 +274,7 @@ ResourceString
   strApplication = 'Application';
   strScreen = 'Screen';
   strForms = 'Forms';
-  strCustomForms = 'CustomForms';
-  strDataModules = 'DataModules';
-  strGettingAppicationClasses = 'Getting Appication Classes...';
+  strGettingAppicationClasses = 'Getting Application Classes...';
   strGettingScreenClasses = 'Getting Screen Classes...';
   strIteratingScreenForms = 'Iterating Screen Forms...';
   strIteratingScreenCustomForms = 'Iterating Screen Custom Forms...';
@@ -284,6 +282,8 @@ ResourceString
   strExpandingAndSorting = 'Expanding and Sorting...';
 
 Const
+  strCustomForms = 'CustomForms';
+  strDataModules = 'DataModules';
   iProgressSteps = 6;
 
 Var
@@ -352,10 +352,10 @@ End;
 
 (**
 
-  This method outputs the parent hierarchy of the WinControl (if its a WinControl).
+  This method outputs the parent hierarchy of the TWinControl (if its a TWinControl).
 
-  @precon  Node must be a vldi instance.
-  @postcon The parent hierarchy is outuput to the hierarchies tab.
+  @precon  Node must be a valid instance.
+  @postcon The parent hierarchy is output to the hierarchies tab.
 
   @param   Node as a PVirtualNode as a constant
 
@@ -409,7 +409,7 @@ End;
 
 (**
 
-  This is an on change event handler for the ComponentFilter edit control.
+  This is an on change event handler for the Component Filter edit control.
 
   @precon  None.
   @postcon Updates the last time the filter was changed.
@@ -425,7 +425,7 @@ End;
 
 (**
 
-  This is an on change event handler for the ViewFilter edit control.
+  This is an on change event handler for the View Filter edit control.
 
   @precon  None.
   @postcon Updates the last time the filter was changed.
@@ -483,7 +483,7 @@ End;
 
 (**
 
-  This method filters the component tree based on the regular expression in the ComponentFilter edit
+  This method filters the component tree based on the regular expression in the Component Filter edit
   control.
 
   @precon  None.
@@ -593,7 +593,7 @@ End;
 
 (**
 
-  This is an OnFormCreate Event Handler for the TDGHIDEExplorerForm class.
+  This is an On Form Create Event Handler for the TDGHIDEExplorerForm class.
 
   @precon  None.
   @postcon Loads the applications settings.
@@ -618,7 +618,7 @@ End;
 
 (**
 
-  This is an OnFormDestroy Event Handler for the TDGHIDEExplorerForm class.
+  This is an On Form Destroy Event Handler for the TDGHIDEExplorerForm class.
 
   @precon  None.
   @postcon Saves the applications settings.
@@ -693,7 +693,7 @@ End;
   This method loads the applications settings from the registry.
 
   @precon  None.
-  @postcon The applications settings are loaded from the regsitry.
+  @postcon The applications settings are loaded from the registry.
 
 **)
 Procedure TDGHIDEExplorerForm.LoadSettings;
@@ -788,7 +788,7 @@ End;
 
 (**
 
-  This is a timer event handler for filtering the component tree and pfields, method properties, etc.
+  This is a timer event handler for filtering the component tree and fields, method properties, etc.
 
   @precon  None.
   @postcon The Component tree and / or Fields, Method Properties, etc are filtered.
@@ -858,7 +858,7 @@ End;
 
 (**
 
-  This is the tree views on change event handler. It gets the item selectds properties and displays them.
+  This is the tree views on change event handler. It gets the item selected properties and displays them.
 
   @precon  None.
   @postcon Clears the list views and re-populates them with data for the new selected node.
@@ -874,7 +874,7 @@ Procedure TDGHIDEExplorerForm.vstComponentTreeFocusChanged(Sender: TBaseVirtualT
 ResourceString
   strClearingExistingData = 'Clearing existing data...';
   strFindingOLDProperties = 'Finding OLD properties...';
-  strBuildingHierarachies = 'Building Hierarachies...';
+  strBuildingHierarachies = 'Building Hierarchies...';
 
 Const
   iProgressSteps = 6;
@@ -1138,7 +1138,7 @@ End;
   This is an on get text event handler for the Hierarchies treeview.
 
   @precon  None.
-  @postcon Provide the correct text for the hierachy / Parentage from the nodes record.
+  @postcon Provide the correct text for the hierarchy / Parentage from the nodes record.
 
   @param   Sender   as a TBaseVirtualTree
   @param   Node     as a PVirtualNode
@@ -1267,7 +1267,7 @@ End;
 
 (**
 
-  This is an on Get Image Index event handler for the Propeties treeview.
+  This is an on Get Image Index event handler for the Properties treeview.
 
   @precon  None.
   @postcon Returns the indexes for the State and image indexes.
@@ -1355,7 +1355,7 @@ End;
 
 (**
 
-  This is an on Get Image Index event handler for the Propeties treeview.
+  This is an on Get Image Index event handler for the Properties treeview.
 
   @precon  None.
   @postcon Returns the indexes for the State and image indexes.

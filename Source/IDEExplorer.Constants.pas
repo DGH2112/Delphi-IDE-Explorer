@@ -3,8 +3,8 @@
   This module contains constants to be used throughout the plug-in.
 
   @Author  David Hoyle
-  @Version 1.092
-  @Date    04 Jun 2020
+  @Version 1.093
+  @Date    04 Jan 2022
   
   @license
 
@@ -32,7 +32,7 @@ Unit IDEExplorer.Constants;
 Interface
 
 Const
-  (** A const to define the build bugfix letters. **)
+  (** A constant to define the build bug fix letters. **)
   strRevision: String = ' abcdefghijklmnopqrstuvwxyz';
 
 Implementation

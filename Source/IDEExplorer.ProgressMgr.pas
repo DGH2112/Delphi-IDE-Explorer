@@ -1,11 +1,11 @@
 (**
   
-  This module contains a class which implements the IDIEProgressMgr interface for managing the diplsay of
-  progress in the aplpication.
+  This module contains a class which implements the IDIEProgressMgr interface for managing the display of
+  progress in the application.
 
   @Author  David Hoyle
-  @Version 1.454
-  @Date    04 Jun 2020
+  @Version 1.455
+  @Date    04 Jan 2022
   
   @license
 
@@ -109,10 +109,10 @@ End;
 
 (**
 
-  This method intialise the progress for the number of steps given.
+  This method initialise the progress for the number of steps given.
 
-  @precon  iSteps needs to be 1 or graeter.
-  @postcon The progress form is intialised.
+  @precon  iSteps needs to be 1 or greater.
+  @postcon The progress form is initialised.
 
   @param   iSteps as an Integer as a constant
 

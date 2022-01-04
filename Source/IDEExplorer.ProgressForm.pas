@@ -3,7 +3,7 @@
   This module contains a class which represents a progress form on the screen.
 
   @Author  David Hoyle
-  @Version 1.168
+  @Version 1.169
   @Date    04 Jan 2022
   
   @license
@@ -68,10 +68,10 @@ Uses
 
 (**
 
-  This is an OnFormCreate Event Handler for the TfrmDIEProgressForm class.
+  This is an On Form Create Event Handler for the TfrmDIEProgressForm class.
 
   @precon  None.
-  @postcon In 10.2 and above, themes the form int he IDE.
+  @postcon In 10.2 and above, themes the form in the IDE.
 
   @param   Sender as a TObject
 
@@ -105,7 +105,7 @@ End;
 
 (**
 
-  This is an OnFormDestroy Event Handler for the TfrmDIEProgressForm class.
+  This is an On Form Destroy Event Handler for the TfrmDIEProgressForm class.
 
   @precon  None.
   @postcon Does nothing except used for CodeSite tracing.
