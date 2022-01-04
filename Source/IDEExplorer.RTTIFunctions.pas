@@ -4,8 +4,8 @@
   properties and events for various objects pass to the single routine below.
 
   @Author  David Hoyle
-  @Version 2.850
-  @Date    04 Jun 2020
+  @Version 2.898
+  @Date    04 Jan 2022
 
   @license
 
@@ -44,7 +44,7 @@ Type
   TIDEExplorerNEWRTTI = Record
   Strict Private
     Class Var
-      (** A class varaiable to hold a single instance of an RTTI Context. **)
+      (** A class variable to hold a single instance of an RTTI Context. **)
       FContext : TRttiContext;
   Strict Private
     Class Procedure ProcessRTTICoreProperty(Const C : TObject; Const P : TRTTIProperty;
@@ -114,7 +114,7 @@ Const
   A constructor for the TIDEExplorerNEWRTTI record.
 
   @precon  None.
-  @postcon Initialises an RTTI context class varaiable.
+  @postcon Initialises an RTTI context class variable.
 
 **)
 Class Constructor TIDEExplorerNEWRTTI.Create;
@@ -128,7 +128,7 @@ End;
   This procedure is design to recursively iterate through the classes and sub classes of a given object 
   and add them to the tree view.
 
-  @precon  tvTree, ParentNode and C must be valid instances.
+  @precon  vstComponents, ParentNode and C must be valid instances.
   @postcon Iterates through the classes subclasses adding them to the tree and then asking those classes
            for their sub-classes.
 
@@ -176,7 +176,7 @@ Begin
               F.FieldType.ToString,
               ValueToString(V)
             ]);
-            NodeData.FImageIndex := -1; //: @debug What to do with this.
+            NodeData.FImageIndex := 6;
             NodeData.FObject := V.AsObject;
             ProcessCoreClass(vstComponents, N, V);
           End;
@@ -203,11 +203,11 @@ End;
 
 (**
 
-  This method processes the Value of the class item and if found to be annother class, recursively 
+  This method processes the Value of the class item and if found to be another class, recursively 
   processes the class.
 
-  @precon  tvTree and N must be valid instances.
-  @postcon Processes the Value of the class item and if found to be annother class, recursively 
+  @precon  vstComponents and N must be valid instances.
+  @postcon Processes the Value of the class item and if found to be another class, recursively 
            processes the class.
 
   @param   vstComponents as a TVirtualStringTree as a constant
@@ -235,9 +235,9 @@ End;
 
 (**
 
-  This procedure processes the fields, methods, properties adn events for the given object.
+  This procedure processes the fields, methods, properties and events for the given object.
 
-  @precon  C, FieldView, MethodView, PropertyView and EventView must be valid instances.
+  @precon  C and vstEvents must be valid instances.
   @postcon The fields, methods, properties and events of the object are output.
 
   @param   C           as a TObject as a constant
@@ -329,7 +329,7 @@ End;
 
   This procedure is called for properties and event as the output is the same they are just filtered 
   differently. This outputs a list view item for the given property/event in the object with the 
-  following information: Scope; Fully Qualified Name; Property Type; Access; Value TypeKind; DataSize; 
+  following information: Scope; Fully Qualified Name; Property Type; Access; Value Type Kind; Data Size; 
   Value.
 
   @precon  C, P and View must be a valid instances.
@@ -345,7 +345,7 @@ Class Procedure TIDEExplorerNEWRTTI.ProcessRTTICoreProperty(Const C : TObject; C
 
   (**
 
-    This procedure determines the acecss type for the property and outputs that to the listview.
+    This procedure determines the access type for the property and outputs that to the list view.
 
     @precon  Item must be a valid instance.
     @postcon The properties access type is output.
@@ -357,8 +357,8 @@ Class Procedure TIDEExplorerNEWRTTI.ProcessRTTICoreProperty(Const C : TObject; C
 
   ResourceString
     strReadWrite = 'Read/Write';
-    strReadonly = 'Readonly';
-    strWriteonly = 'Writeonly';
+    strReadonly = 'Read only';
+    strWriteonly = 'Write only';
     strUnknown = '<Unknown>';
 
   Begin
@@ -395,6 +395,9 @@ Begin
     If Not FatalValue(P.Name) And P.IsReadable Then
       Begin
         V := P.GetValue(C);
+        NodeData.FObject := Nil;
+        If P.PropertyType.TypeKind = tkClass Then
+          NodeData.FObject := V.AsObject;
         If P.IsReadable Then
           NodeData.FValue := ProcessValue(V, P.PropertyType.ToString);
       End;
@@ -443,7 +446,7 @@ End;
 
   This procedure iterates through the properties of the given object outputting a list view item for each
   property containing the following information: Scope; Fully Qualified Name; Field Type; Offset of the 
-  field in the VTable (I think); Value TypeKind; DataSize; Value.
+  field in the Virtual Table (I think); Value Type Kind; Data Size; Value.
 
   @precon  C, Ctx and View must be a valid instances.
   @postcon A list view item is created for the property.
@@ -483,6 +486,9 @@ Begin
           End;
         Try
           Value := Field.GetValue(C);
+          NodeData.FObject := Nil;
+          If Field.FieldType.TypeKind = tkClass Then
+            NodeData.FObject := Value.AsObject;
           NodeData.FValue := ProcessValue(Value, Field.FieldType.ToString);
         Except
           On E : EInsufficientRtti Do
@@ -605,10 +611,10 @@ End;
 
 (**
 
-  This function does all the conversion of a TValue passed to it into a text eqivalent.
+  This function does all the conversion of a TValue passed to it into a text equivalent.
 
   @precon  None.
-  @postcon A striong representing the value is returned.
+  @postcon A string representing the value is returned.
 
   @param   Value as a TValue as a constant
   @return  a String
@@ -652,7 +658,7 @@ Class Function TIDEExplorerNEWRTTI.ValueToString(Const Value : TValue) : String;
   (**
 
     This function returns the ordinal value of the character and if the character is
-    greater than 32 also appeands the character.
+    greater than 32 also appends the character.
 
     @precon  None.
     @postcon Returns an ordinal value for the character.
@@ -734,7 +740,7 @@ End;
     instances of found classes fir the ProcessClass method above. Its to prevent loops. **)
 Initialization
   FoundClasses := TList.Create;
-(** Frees the FoudnClasses list. **)
+(** Frees the Found Classes list. **)
 Finalization
   FoundClasses.Free;
 End.

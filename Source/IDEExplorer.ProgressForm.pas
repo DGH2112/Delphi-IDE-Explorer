@@ -3,8 +3,8 @@
   This module contains a class which represents a progress form on the screen.
 
   @Author  David Hoyle
-  @Version 1.167
-  @Date    04 Jun 2020
+  @Version 1.169
+  @Date    04 Jan 2022
   
   @license
 
@@ -68,44 +68,44 @@ Uses
 
 (**
 
-  This is an OnFormCreate Event Handler for the TfrmDIEProgressForm class.
+  This is an On Form Create Event Handler for the TfrmDIEProgressForm class.
 
   @precon  None.
-  @postcon In 10.2 and above, themes the form int he IDE.
+  @postcon In 10.2 and above, themes the form in the IDE.
 
   @param   Sender as a TObject
 
 **)
 Procedure TfrmDIEProgressForm.FormCreate(Sender: TObject);
 
-{$IFDEF DXE102}
+{$IFDEF RS102}
 Var
-  {$IFDEF DXE104}
+  {$IFDEF RS104}
   ITS : IOTAIDEThemingServices;
   {$ELSE}
   ITS : IOTAIDEThemingServices250;
-  {$ENDIF DXE104}
-{$ENDIF DXE102}
+  {$ENDIF RS104}
+{$ENDIF RS102}
   
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod(Self, 'FormCreate', tmoTiming);{$ENDIF}
-  {$IFDEF DXE102}
-  {$IFDEF DXE104}
+  {$IFDEF RS102}
+  {$IFDEF RS104}
   If Supports(BorlandIDEServices, IOTAIDEThemingServices, ITS) Then
   {$ELSE}
   If Supports(BorlandIDEServices, IOTAIDEThemingServices250, ITS) Then
-  {$ENDIF DXE104}
+  {$ENDIF RS104}
     If ITS.IDEThemingEnabled Then
       Begin
         ITS.RegisterFormClass(TfrmDIEProgressForm);
         ITS.ApplyTheme(Self);
       End;
-  {$ENDIF DXE102}
+  {$ENDIF RS102}
 End;
 
 (**
 
-  This is an OnFormDestroy Event Handler for the TfrmDIEProgressForm class.
+  This is an On Form Destroy Event Handler for the TfrmDIEProgressForm class.
 
   @precon  None.
   @postcon Does nothing except used for CodeSite tracing.

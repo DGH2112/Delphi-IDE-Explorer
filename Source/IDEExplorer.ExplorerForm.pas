@@ -2,8 +2,8 @@
 
   This module contains the explorer form interface.
 
-  @Date    04 Jun 2020
-  @Version 6.244
+  @Date    04 Jan 2022
+  @Version 6.616
   @Author  David Hoyle
 
   @license
@@ -56,8 +56,8 @@ Type
     splSplitter1: TSplitter;
     ilTypeKindImages: TImageList;
     pgcPropertiesMethodsAndEvents: TPageControl;
-    TabSheet1: TTabSheet;
-    TabSheet2: TTabSheet;
+    tabOLDProperties: TTabSheet;
+    tabHierarchies: TTabSheet;
     tabNewProperties: TTabSheet;
     tabFields: TTabSheet;
     tabEvents: TTabSheet;
@@ -91,6 +91,7 @@ Type
       Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: TImageIndex);
     procedure vstComponentTreeGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
       TextType: TVSTTextType; var CellText: string);
+    procedure vstFieldsDblClick(Sender: TObject);
     procedure vstFieldsFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure vstFieldsGetImageIndex(Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind;
       Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: TImageIndex);
@@ -111,6 +112,7 @@ Type
       TVTImageKind; Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: TImageIndex);
     procedure vstOLDPropertiesGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
       TextType: TVSTTextType; var CellText: string);
+    procedure vstPropertiesDblClick(Sender: TObject);
     procedure vstPropertiesFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure vstPropertiesGetImageIndex(Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind;
       Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: TImageIndex);
@@ -155,7 +157,7 @@ Type
   TIDEExplorerTreeImage = (tiApplication, tiDataModule, tiForm, tiPackage, tiForms, tiDataModules);
 
 Const
-  (** This is the root registration jey for this applications settings. **)
+  (** This is the root registration key for this applications settings. **)
   RegKey = '\Software\Seasons Fall';
   (** This is the section name for the applications settings in the registry **)
   SectionName = 'DGH IDE Explorer';
@@ -169,12 +171,14 @@ Const
   strHeightKey = 'Height';
   (** An INI Key for the width position of the tree view in the dialogue. **)
   strTreeWidthKey = 'TreeWidth';
+  (** A constant for the image index to be used for classes. **)
+  iClassImgIdx = 6;
 
 (**
 
   This method builds a hierarchical list of the components heritage.
 
-  @precon  Node must be a vldi instance.
+  @precon  Node must be a valid instance.
   @postcon The heritage tree is output to the hierarchies tab.
 
   @param   Node as a PVirtualNode as a constant
@@ -231,7 +235,7 @@ End;
   This is the forms on show event. It initialises the tree view.
 
   @precon  None.
-  @postcon Iterates through the forms and datamodules and adds them to the tree view.
+  @postcon Iterates through the forms and data modules and adds them to the tree view.
 
   @param   Sender as a TObject
 
@@ -240,11 +244,11 @@ Procedure TDGHIDEExplorerForm.BuildFormComponentTree(Sender: TObject);
 
   (**
 
-    This method adds a form/datamodule to a root node in the tree and then calls GetComponents to get the
+    This method adds a form/data module to a root node in the tree and then calls GetComponents to get the
     forms components.
 
-    @precon  ParentNode and ScreenForm must be valid instances.
-    @postcon Adds a form/datamodule to a root node in the tree and then calls GetComponents to get the 
+    @precon  ParentNode and Component must be valid instances.
+    @postcon Adds a form/data module to a root node in the tree and then calls GetComponents to get the 
              forms components.
 
     @param   ParentNode as a PVirtualNode as a constant
@@ -274,9 +278,7 @@ ResourceString
   strApplication = 'Application';
   strScreen = 'Screen';
   strForms = 'Forms';
-  strCustomForms = 'CustomForms';
-  strDataModules = 'DataModules';
-  strGettingAppicationClasses = 'Getting Appication Classes...';
+  strGettingAppicationClasses = 'Getting Application Classes...';
   strGettingScreenClasses = 'Getting Screen Classes...';
   strIteratingScreenForms = 'Iterating Screen Forms...';
   strIteratingScreenCustomForms = 'Iterating Screen Custom Forms...';
@@ -284,6 +286,8 @@ ResourceString
   strExpandingAndSorting = 'Expanding and Sorting...';
 
 Const
+  strCustomForms = 'CustomForms';
+  strDataModules = 'DataModules';
   iProgressSteps = 6;
 
 Var
@@ -352,10 +356,10 @@ End;
 
 (**
 
-  This method outputs the parent hierarchy of the WinControl (if its a WinControl).
+  This method outputs the parent hierarchy of the TWinControl (if its a TWinControl).
 
-  @precon  Node must be a vldi instance.
-  @postcon The parent hierarchy is outuput to the hierarchies tab.
+  @precon  Node must be a valid instance.
+  @postcon The parent hierarchy is output to the hierarchies tab.
 
   @param   Node as a PVirtualNode as a constant
 
@@ -409,7 +413,7 @@ End;
 
 (**
 
-  This is an on change event handler for the ComponentFilter edit control.
+  This is an on change event handler for the Component Filter edit control.
 
   @precon  None.
   @postcon Updates the last time the filter was changed.
@@ -425,7 +429,7 @@ End;
 
 (**
 
-  This is an on change event handler for the ViewFilter edit control.
+  This is an on change event handler for the View Filter edit control.
 
   @precon  None.
   @postcon Updates the last time the filter was changed.
@@ -451,30 +455,30 @@ Class Procedure TDGHIDEExplorerForm.Execute;
 
 Var
   F : TDGHIDEExplorerForm;
-  {$IFDEF DXE102}
-  {$IFDEF DXE104}
+  {$IFDEF RS102}
+  {$IFDEF RS104}
   ITS : IOTAIDEThemingServices;
   {$ELSE}
   ITS : IOTAIDEThemingServices250;
-  {$ENDIF DXE104}
-  {$ENDIF DXE102}
+  {$ENDIF RS104}
+  {$ENDIF RS102}
   
 Begin
   {$IFDEF CODESITE}CodeSite.TraceMethod('TDGHIDEExplorerForm.Execute', tmoTiming);{$ENDIF}
   F := TDGHIDEExplorerForm.Create(Application.MainForm);
   Try
-    {$IFDEF DXE102}
-    {$IFDEF DXE104}
+    {$IFDEF RS102}
+    {$IFDEF RS104}
     If Supports(BorlandIDEServices, IOTAIDEThemingServices, ITS) Then
     {$ELSE}
     If Supports(BorlandIDEServices, IOTAIDEThemingServices250, ITS) Then
-    {$ENDIF DXE104}
+    {$ENDIF RS104}
       If ITS.IDEThemingEnabled Then
         Begin
           ITS.RegisterFormClass(TDGHIDEExplorerForm);
           ITS.ApplyTheme(F);
         End;
-    {$ENDIF}
+    {$ENDIF RS102}
     F.ShowModal;
   Finally
     F.Free;
@@ -483,7 +487,7 @@ End;
 
 (**
 
-  This method filters the component tree based on the regular expression in the ComponentFilter edit
+  This method filters the component tree based on the regular expression in the Component Filter edit
   control.
 
   @precon  None.
@@ -593,7 +597,7 @@ End;
 
 (**
 
-  This is an OnFormCreate Event Handler for the TDGHIDEExplorerForm class.
+  This is an On Form Create Event Handler for the TDGHIDEExplorerForm class.
 
   @precon  None.
   @postcon Loads the applications settings.
@@ -618,7 +622,7 @@ End;
 
 (**
 
-  This is an OnFormDestroy Event Handler for the TDGHIDEExplorerForm class.
+  This is an On Form Destroy Event Handler for the TDGHIDEExplorerForm class.
 
   @precon  None.
   @postcon Saves the applications settings.
@@ -693,7 +697,7 @@ End;
   This method loads the applications settings from the registry.
 
   @precon  None.
-  @postcon The applications settings are loaded from the regsitry.
+  @postcon The applications settings are loaded from the registry.
 
 **)
 Procedure TDGHIDEExplorerForm.LoadSettings;
@@ -788,7 +792,7 @@ End;
 
 (**
 
-  This is a timer event handler for filtering the component tree and pfields, method properties, etc.
+  This is a timer event handler for filtering the component tree and fields, method properties, etc.
 
   @precon  None.
   @postcon The Component tree and / or Fields, Method Properties, etc are filtered.
@@ -858,7 +862,7 @@ End;
 
 (**
 
-  This is the tree views on change event handler. It gets the item selectds properties and displays them.
+  This is the tree views on change event handler. It gets the item selected properties and displays them.
 
   @precon  None.
   @postcon Clears the list views and re-populates them with data for the new selected node.
@@ -874,7 +878,7 @@ Procedure TDGHIDEExplorerForm.vstComponentTreeFocusChanged(Sender: TBaseVirtualT
 ResourceString
   strClearingExistingData = 'Clearing existing data...';
   strFindingOLDProperties = 'Finding OLD properties...';
-  strBuildingHierarachies = 'Building Hierarachies...';
+  strBuildingHierarachies = 'Building Hierarchies...';
 
 Const
   iProgressSteps = 6;
@@ -994,6 +998,45 @@ Var
 Begin
   NodeData := Sender.GetNodeData(Node);
   CellText := NodeData.FText;
+End;
+
+(**
+
+  This is an on double click event handler for the fields VTV control.
+
+  @precon  None.
+  @postcon Allows the user to drill-down into classes.
+
+  @param   Sender as a TObject
+
+**)
+Procedure TDGHIDEExplorerForm.vstFieldsDblClick(Sender: TObject);
+
+ResourceString
+  strYouCannotDrillDownOnThisField = 'You cannot drill down on this field.';
+
+Var
+  Node: PVirtualNode;
+  NodeData : PDIEFieldData;
+  ComponentNodeData : PDIEObjectData;
+
+Begin
+  If Not Assigned(vstFields.FocusedNode) Then
+    Exit;
+  NodeData := vstFields.GetNodeData(vstFields.FocusedNode);
+  If Not Assigned(NodeData.FObject) Then
+    Begin
+      MessageDlg(strYouCannotDrillDownOnThisField, mtWarning, [mbOK], 0);
+      Exit;
+    End;
+  Node := vstComponentTree.AddChild(vstComponentTree.FocusedNode);
+  ComponentNodeData := vstComponentTree.GetNodeData(Node);
+  ComponentNodeData.FText := NodeData.FQualifiedName;
+  ComponentNodeData.FObject := NodeData.FObject;
+  ComponentNodeData.FImageIndex := iClassImgIdx;
+  vstComponentTree.Expanded[vstComponentTree.FocusedNode] := True;
+  vstComponentTree.FocusedNode := Node;
+  vstComponentTree.Selected[vstComponentTree.FocusedNode] := True;
 End;
 
 (**
@@ -1138,7 +1181,7 @@ End;
   This is an on get text event handler for the Hierarchies treeview.
 
   @precon  None.
-  @postcon Provide the correct text for the hierachy / Parentage from the nodes record.
+  @postcon Provide the correct text for the hierarchy / Parentage from the nodes record.
 
   @param   Sender   as a TBaseVirtualTree
   @param   Node     as a PVirtualNode
@@ -1267,7 +1310,7 @@ End;
 
 (**
 
-  This is an on Get Image Index event handler for the Propeties treeview.
+  This is an on Get Image Index event handler for the Properties treeview.
 
   @precon  None.
   @postcon Returns the indexes for the State and image indexes.
@@ -1334,6 +1377,45 @@ End;
 
 (**
 
+  This is an on double click event handler for the property VTV control.
+
+  @precon  None.
+  @postcon Allows the user to drill-down into classes.
+
+  @param   Sender as a TObject
+
+**)
+Procedure TDGHIDEExplorerForm.vstPropertiesDblClick(Sender: TObject);
+
+ResourceString
+  strYouCannotDrillDownOnThisProperty = 'You cannot drill down on this property.';
+
+Var
+  Node: PVirtualNode;
+  NodeData : PDIEPropertyData;
+  ComponentNodeData : PDIEObjectData;
+
+Begin
+  If Not Assigned(vstProperties.FocusedNode) Then
+    Exit;
+  NodeData := vstProperties.GetNodeData(vstProperties.FocusedNode);
+  If Not Assigned(NodeData.FObject) Then
+    Begin
+      MessageDlg(strYouCannotDrillDownOnThisProperty, mtWarning, [mbOK], 0);
+      Exit;
+    End;
+  Node := vstComponentTree.AddChild(vstComponentTree.FocusedNode);
+  ComponentNodeData := vstComponentTree.GetNodeData(Node);
+  ComponentNodeData.FText := NodeData.FQualifiedName;
+  ComponentNodeData.FObject := NodeData.FObject;
+  ComponentNodeData.FImageIndex := iClassImgIdx;
+  vstComponentTree.Expanded[vstComponentTree.FocusedNode] := True;
+  vstComponentTree.FocusedNode := Node;
+  vstComponentTree.Selected[vstComponentTree.FocusedNode] := True;
+End;
+
+(**
+
   This is an on free event handler for the Properties treeview.
 
   @precon  None.
@@ -1355,7 +1437,7 @@ End;
 
 (**
 
-  This is an on Get Image Index event handler for the Propeties treeview.
+  This is an on Get Image Index event handler for the Properties treeview.
 
   @precon  None.
   @postcon Returns the indexes for the State and image indexes.

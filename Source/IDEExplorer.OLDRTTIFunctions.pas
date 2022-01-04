@@ -3,8 +3,8 @@
   This module contains the old style RTTI information.
 
   @Author  David Hoyle
-  @Version 1.718
-  @Date    04 Jun 2020
+  @Version 1.721
+  @Date    04 Jan 2022
 
   @license
 
@@ -68,7 +68,7 @@ Uses
 
 (**
 
-  This procedure exrtacts the old published properties of the given object pointer and adds a treeview 
+  This procedure extracts the old published properties of the given object pointer and adds a treeview 
   item for each property.
 
   @precon  View and ptrData must be valid instances.
@@ -130,8 +130,8 @@ End;
 
   This method returns a string representation of the given property`s value.
 
-  @precon  PropListIte, and ptrData must be valid instances.
-  @postcon A string represetation of the property is returned.
+  @precon  PropListItem, and ptrData must be valid instances.
+  @postcon A string representation of the property is returned.
 
   @param   PropListItem as a PPropInfo as a constant
   @param   ptrData      as a TObject as a constant
@@ -148,8 +148,8 @@ ResourceString
   strVariant = '< Variant >';
   strArray = '< Array >';
   strRecord = '< Record >';
-  strInteface = '< Inteface >';
-  strClassRef = '< ClassRef >';
+  strInteface = '< Interface >';
+  strClassRef = '< Class Ref >';
   strPointer = '< Pointer >';
   strProcedure = '< Procedure >';
   strMISSINGPROPERTYHANDLER = '< MISSING PROPERTY HANDLER >';
@@ -174,11 +174,11 @@ Begin
     tkInterface:   Result := strInteface {GetInterfaceProp(TObject(ptrData), PropList[i])};
     tkInt64:       Result := IntToStr(GetInt64Prop(TObject(ptrData), PropListItem));
     tkDynArray:    Result := Format('%x', [GetDynArrayProp(TObject(ptrData), PropListItem)]);
-    {$IFDEF DXE102}
+    {$IFDEF RS102}
     tkUString:     Result := GetStrProp(TObject(ptrData), PropListItem);
     {$ELSE}
     tkUString:     Result := GetUnicodeStrProp(TObject(ptrData), PropListItem);
-    {$ENDIF}
+    {$ENDIF RS102}
     tkClassRef:    Result := strClassRef;
     tkPointer:     Result := strPointer;
     tkProcedure:   Result := strProcedure;
@@ -189,7 +189,7 @@ End;
 
 (**
 
-  This function returns the enumerate valeu name for the given pointer item.
+  This function returns the enumerate value name for the given pointer item.
 
   @precon  ptrData and PropListItem must be valid.
   @postcon Returns the name of the enumerate value.
@@ -227,10 +227,10 @@ End;
 
 (**
 
-  This function returns the memoet addresses of the method.
+  This function returns the memory addresses of the method.
 
   @precon  ptrData and PropListItem must be valid.
-  @postcon Returns the memoet addresses of the method.
+  @postcon Returns the memory addresses of the method.
 
   @param   ptrData      as a Pointer as a constant
   @param   PropListItem as a PPropInfo as a constant
@@ -259,10 +259,10 @@ End;
 
 (**
 
-  This function returns a text represetnation of the values that are contained in the set.
+  This function returns a text representation of the values that are contained in the set.
 
   @precon  ptrData and PropListItem must be valid instances.
-  @postcon Returns a text represetnation of the values that are contained in the set.
+  @postcon Returns a text representation of the values that are contained in the set.
 
   @param   ptrData      as a Pointer as a constant
   @param   PropListItem as a PPropInfo as a constant

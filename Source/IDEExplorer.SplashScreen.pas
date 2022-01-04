@@ -3,8 +3,8 @@
   This module contains code to install a splash screen entry into the RAD Studio IDE.
 
   @Author  David Hoyle
-  @Version 1.104
-  @Date    04 Jun 2020
+  @Version 1.203
+  @Date    04 Jan 2022
   
   @license
 
@@ -35,12 +35,18 @@ Interface
 
 Implementation
 
+{$INCLUDE CompilerDefinitions.inc}
+
 Uses
   ToolsAPI,
   SysUtils,
   DateUtils,
   Forms,
+  {$IFDEF RS110}
+  Graphics,
+  {$ELSE}
   Windows,
+  {$ENDIF RS110}
   IDEExplorer.Types,
   IDEExplorer.Functions,
   IDEExplorer.Constants,
@@ -64,33 +70,40 @@ Const
   {$ENDIF}
 
 Var
-  VersionInfo : TVersionInfo;
+  VerInfo : TVersionInfo;
   SSS : IOTASplashScreenServices;
+  {$IFDEF RS110}
+  SplashScreenBitMap : TBitMap;
+  {$ELSE}
   bmSplashScreen : HBITMAP;
+  {$ENDIF}
 
 Begin
   If Supports(SplashScreenServices, IOTASplashScreenServices, SSS) Then
     Begin
-      BuildNumber(VersionInfo);
+      BuildNumber(VerInfo);
+      {$IFDEF RS110}
+      SplashScreenBitMap := TBitMap.Create;
+      Try
+        SplashScreenBitMap.LoadFromResourceName(hINstance, strSplashScreenIcon);
+        SSS.AddPluginBitmap(
+          Format(strSplashScreenName, [VerInfo.iMajor, VerInfo.iMinor, Copy(strRevision, VerInfo.iBugFix + 1, 1), Application.Title]),
+          [SplashScreenBitMap],
+          {$IFDEF DEBUG} True {$ELSE} False {$ENDIF},
+          Format(strSplashScreenBuild, [VerInfo.iMajor, VerInfo.iMinor, VerInfo.iBugfix, VerInfo.iBuild])
+        );
+      Finally
+        SplashScreenBitMap.Free;
+      End;
+      {$ELSE}
       bmSplashScreen := LoadBitmap(hInstance, strSplashScreenIcon);
       SSS.AddPluginBitmap(
-        Format(strSplashScreenName, [
-          VersionInfo.iMajor,
-          VersionInfo.iMinor,
-          Copy(strRevision, VersionInfo.iBugFix + 1, 1),
-          Application.Title
-        ]),
+        Format(strSplashScreenName, [VerInfo.iMajor, VerInfo.iMinor, Copy(strRevision, VerInfo.iBugFix + 1, 1), Application.Title]),
         bmSplashScreen,
         {$IFDEF DEBUG} True {$ELSE} False {$ENDIF},
-        Format(
-          strSplashScreenBuild, [
-            VersionInfo.iMajor, 
-            VersionInfo.iMinor, 
-            VersionInfo.iBugfix, 
-            VersionInfo.iBuild
-          ]
-        )
+        Format(strSplashScreenBuild, [VerInfo.iMajor, VerInfo.iMinor, VerInfo.iBugfix, VerInfo.iBuild])
       );
+      {$ENDIF RS110}
     End;
 End;
 
