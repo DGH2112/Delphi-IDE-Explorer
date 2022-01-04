@@ -3,8 +3,8 @@
   This module contains simple types for use throughout the plug-in.
 
   @Author  David Hoyle
-  @Version 1.426
-  @Date    04 Jun 2020
+  @Version 1.430
+  @Date    04 Jan 2022
   
   @license
 
@@ -64,6 +64,7 @@ Type
     FImageIndex      : Integer;
     FSize            : String;
     FValue           : String;
+    FObject          : TObject;
   End;
   (** A pointer to the above structure. **)
   PDIEFieldData = ^TDIEFieldData;

@@ -65,6 +65,8 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
       OnFreeNode = vstComponentTreeFreeNode
       OnGetText = vstComponentTreeGetText
       OnGetImageIndex = vstComponentTreeGetImageIndex
+      Touch.InteractiveGestures = [igPan, igPressAndTap]
+      Touch.InteractiveGestureOptions = [igoPanSingleFingerHorizontal, igoPanSingleFingerVertical, igoPanInertia, igoPanGutter, igoParentPassthrough]
       Columns = <>
     end
     object edtComponentFilter: TEdit
@@ -96,7 +98,7 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
       Top = 33
       Width = 630
       Height = 443
-      ActivePage = TabSheet1
+      ActivePage = tabFields
       Align = alClient
       TabOrder = 0
       object tabFields: TTabSheet
@@ -139,44 +141,47 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
           TabOrder = 0
           TreeOptions.PaintOptions = [toShowButtons, toShowDropmark, toShowHorzGridLines, toShowTreeLines, toShowVertGridLines, toThemeAware, toUseBlendedImages]
           TreeOptions.SelectionOptions = [toFullRowSelect]
+          OnDblClick = vstFieldsDblClick
           OnFreeNode = vstFieldsFreeNode
           OnGetText = vstFieldsGetText
           OnGetImageIndex = vstFieldsGetImageIndex
+          Touch.InteractiveGestures = [igPan, igPressAndTap]
+          Touch.InteractiveGestureOptions = [igoPanSingleFingerHorizontal, igoPanSingleFingerVertical, igoPanInertia, igoPanGutter, igoParentPassthrough]
           Columns = <
             item
               Position = 0
+              Text = 'Scope'
               Width = 100
-              WideText = 'Scope'
             end
             item
               Position = 1
+              Text = 'Qualified Name'
               Width = 100
-              WideText = 'Qualified Name'
             end
             item
               Position = 2
+              Text = 'Type'
               Width = 100
-              WideText = 'Type'
             end
             item
               Position = 3
+              Text = 'Offset'
               Width = 100
-              WideText = 'Offset'
             end
             item
               Position = 4
+              Text = 'Kind'
               Width = 100
-              WideText = 'Kind'
             end
             item
               Position = 5
+              Text = 'Size'
               Width = 100
-              WideText = 'Size'
             end
             item
               Position = 6
+              Text = 'Value'
               Width = 100
-              WideText = 'Value'
             end>
         end
       end
@@ -223,26 +228,28 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
           OnFreeNode = vstMethodsFreeNode
           OnGetText = vstMethodsGetText
           OnGetImageIndex = vstMethodsGetImageIndex
+          Touch.InteractiveGestures = [igPan, igPressAndTap]
+          Touch.InteractiveGestureOptions = [igoPanSingleFingerHorizontal, igoPanSingleFingerVertical, igoPanInertia, igoPanGutter, igoParentPassthrough]
           Columns = <
             item
               Position = 0
+              Text = 'Scope'
               Width = 100
-              WideText = 'Scope'
             end
             item
               Position = 1
+              Text = 'Qualified Name'
               Width = 100
-              WideText = 'Qualified Name'
             end
             item
               Position = 2
+              Text = 'Type'
               Width = 100
-              WideText = 'Type'
             end
             item
               Position = 3
+              Text = 'Signature'
               Width = 100
-              WideText = 'Signature'
             end>
         end
       end
@@ -290,41 +297,43 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
           OnFreeNode = vstPropertiesFreeNode
           OnGetText = vstPropertiesGetText
           OnGetImageIndex = vstPropertiesGetImageIndex
+          Touch.InteractiveGestures = [igPan, igPressAndTap]
+          Touch.InteractiveGestureOptions = [igoPanSingleFingerHorizontal, igoPanSingleFingerVertical, igoPanInertia, igoPanGutter, igoParentPassthrough]
           Columns = <
             item
               Position = 0
+              Text = 'Scope'
               Width = 66
-              WideText = 'Scope'
             end
             item
               Position = 1
+              Text = 'Qualified Name'
               Width = 132
-              WideText = 'Qualified Name'
             end
             item
               Position = 2
+              Text = 'Type'
               Width = 64
-              WideText = 'Type'
             end
             item
               Position = 3
+              Text = 'Access'
               Width = 75
-              WideText = 'Access'
             end
             item
               Position = 4
+              Text = 'Kind'
               Width = 100
-              WideText = 'Kind'
             end
             item
               Position = 5
+              Text = 'Size'
               Width = 73
-              WideText = 'Size'
             end
             item
               Position = 6
+              Text = 'Value'
               Width = 61
-              WideText = 'Value'
             end>
         end
       end
@@ -372,41 +381,43 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
           OnFreeNode = vstPropertiesFreeNode
           OnGetText = vstPropertiesGetText
           OnGetImageIndex = vstPropertiesGetImageIndex
+          Touch.InteractiveGestures = [igPan, igPressAndTap]
+          Touch.InteractiveGestureOptions = [igoPanSingleFingerHorizontal, igoPanSingleFingerVertical, igoPanInertia, igoPanGutter, igoParentPassthrough]
           Columns = <
             item
               Position = 0
+              Text = 'Scope'
               Width = 66
-              WideText = 'Scope'
             end
             item
               Position = 1
+              Text = 'Qualified Name'
               Width = 132
-              WideText = 'Qualified Name'
             end
             item
               Position = 2
+              Text = 'Type'
               Width = 64
-              WideText = 'Type'
             end
             item
               Position = 3
+              Text = 'Access'
               Width = 75
-              WideText = 'Access'
             end
             item
               Position = 4
+              Text = 'Kind'
               Width = 100
-              WideText = 'Kind'
             end
             item
               Position = 5
+              Text = 'Size'
               Width = 73
-              WideText = 'Size'
             end
             item
               Position = 6
+              Text = 'Value'
               Width = 61
-              WideText = 'Value'
             end>
         end
       end
@@ -446,6 +457,8 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
           OnFreeNode = vstHierarchiesFreeNode
           OnGetText = vstHierarchiesGetText
           OnGetImageIndex = vstHierarchiesGetImageIndex
+          Touch.InteractiveGestures = [igPan, igPressAndTap]
+          Touch.InteractiveGestureOptions = [igoPanSingleFingerHorizontal, igoPanSingleFingerVertical, igoPanInertia, igoPanGutter, igoParentPassthrough]
           Columns = <>
         end
       end
@@ -493,26 +506,28 @@ object DGHIDEExplorerForm: TDGHIDEExplorerForm
           OnFreeNode = vstOLDPropertiesFreeNode
           OnGetText = vstOLDPropertiesGetText
           OnGetImageIndex = vstOLDPropertiesGetImageIndex
+          Touch.InteractiveGestures = [igPan, igPressAndTap]
+          Touch.InteractiveGestureOptions = [igoPanSingleFingerHorizontal, igoPanSingleFingerVertical, igoPanInertia, igoPanGutter, igoParentPassthrough]
           Columns = <
             item
               Position = 0
+              Text = 'Qualified Name'
               Width = 100
-              WideText = 'Qualified Name'
             end
             item
               Position = 1
+              Text = 'Type'
               Width = 100
-              WideText = 'Type'
             end
             item
               Position = 2
+              Text = 'Kind'
               Width = 100
-              WideText = 'Kind'
             end
             item
               Position = 3
+              Text = 'Value'
               Width = 100
-              WideText = 'Value'
             end>
         end
       end

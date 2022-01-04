@@ -4,7 +4,7 @@
   properties and events for various objects pass to the single routine below.
 
   @Author  David Hoyle
-  @Version 2.860
+  @Version 2.880
   @Date    04 Jan 2022
 
   @license
@@ -483,6 +483,9 @@ Begin
           End;
         Try
           Value := Field.GetValue(C);
+          NodeData.FObject := Nil;
+          If Field.FieldType.TypeKind = tkClass Then
+            NodeData.FObject := Value.AsObject;
           NodeData.FValue := ProcessValue(Value, Field.FieldType.ToString);
         Except
           On E : EInsufficientRtti Do

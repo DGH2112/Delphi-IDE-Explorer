@@ -3,7 +3,7 @@
   This module contains the explorer form interface.
 
   @Date    04 Jan 2022
-  @Version 6.252
+  @Version 6.468
   @Author  David Hoyle
 
   @license
@@ -91,6 +91,7 @@ Type
       Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: TImageIndex);
     procedure vstComponentTreeGetText(Sender: TBaseVirtualTree; Node: PVirtualNode; Column: TColumnIndex;
       TextType: TVSTTextType; var CellText: string);
+    procedure vstFieldsDblClick(Sender: TObject);
     procedure vstFieldsFreeNode(Sender: TBaseVirtualTree; Node: PVirtualNode);
     procedure vstFieldsGetImageIndex(Sender: TBaseVirtualTree; Node: PVirtualNode; Kind: TVTImageKind;
       Column: TColumnIndex; var Ghosted: Boolean; var ImageIndex: TImageIndex);
@@ -994,6 +995,45 @@ Var
 Begin
   NodeData := Sender.GetNodeData(Node);
   CellText := NodeData.FText;
+End;
+
+(**
+
+  This is an on double click event handler for the fields VTV control.
+
+  @precon  None.
+  @postcon Allows the user to drill-down into classes.
+
+  @param   Sender as a TObject
+
+**)
+Procedure TDGHIDEExplorerForm.vstFieldsDblClick(Sender: TObject);
+
+ResourceString
+  strYouCannotDrillDownOnThisField = 'You cannot drill down on this field.';
+
+Var
+  Node: PVirtualNode;
+  NodeData : PDIEFieldData;
+  ComponentNodeData : PDIEObjectData;
+
+Begin
+  If Not Assigned(vstFields.FocusedNode) Then
+    Exit;
+  NodeData := vstFields.GetNodeData(vstFields.FocusedNode);
+  If Not Assigned(NodeData.FObject) Then
+    Begin
+      MessageDlg(strYouCannotDrillDownOnThisField, mtWarning, [mbOK], 0);
+      Exit;
+    End;
+  Node := vstComponentTree.AddChild(vstComponentTree.FocusedNode);
+  ComponentNodeData := vstComponentTree.GetNodeData(Node);
+  ComponentNodeData.FText := NodeData.FQualifiedName;
+  ComponentNodeData.FObject := NodeData.FObject;
+  ComponentNodeData.FImageIndex := 0;
+  vstComponentTree.Expanded[vstComponentTree.FocusedNode] := True;
+  vstComponentTree.FocusedNode := Node;
+  vstComponentTree.Selected[vstComponentTree.FocusedNode] := True;
 End;
 
 (**
