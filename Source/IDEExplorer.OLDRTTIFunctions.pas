@@ -3,8 +3,8 @@
   This module contains the old style RTTI information.
 
   @Author  David Hoyle
-  @Version 1.718
-  @Date    04 Jun 2020
+  @Version 1.719
+  @Date    04 Jan 2022
 
   @license
 
@@ -174,11 +174,11 @@ Begin
     tkInterface:   Result := strInteface {GetInterfaceProp(TObject(ptrData), PropList[i])};
     tkInt64:       Result := IntToStr(GetInt64Prop(TObject(ptrData), PropListItem));
     tkDynArray:    Result := Format('%x', [GetDynArrayProp(TObject(ptrData), PropListItem)]);
-    {$IFDEF DXE102}
+    {$IFDEF RS102}
     tkUString:     Result := GetStrProp(TObject(ptrData), PropListItem);
     {$ELSE}
     tkUString:     Result := GetUnicodeStrProp(TObject(ptrData), PropListItem);
-    {$ENDIF}
+    {$ENDIF RS102}
     tkClassRef:    Result := strClassRef;
     tkPointer:     Result := strPointer;
     tkProcedure:   Result := strProcedure;

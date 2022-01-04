@@ -8,7 +8,7 @@ CompileWithBRCC32=0
 MajorVer=2
 MinorVer=3
 ReleaseVer=1
-BuildVer=685
+BuildVer=690
 ResourceName=IDEExplorerITHVerInfo
 WarnBefore=0
 WarnAfter=0
@@ -28,14 +28,14 @@ IncBuild.MakeUnit.Debug=0
 
 [Zipping]
 Enabled=1
-ZipFile=D:\Documents\Web Page\Zips\IDEExplorerDLL.zip
+ZipFile=D:\Documents\Web Page\Zips\IDEExplorer.zip
 BasePath=D:\Documents\RAD Studio\
 ExclusionFiles=
 
 [VersionInfo]
 CompanyName=Season's Fall Music
 FileDescription=IDEExplorer: A package to allow you to browser the internal fields, properties, methods and events of the IDE
-FileVersion=2.3.1.685
+FileVersion=2.3.1.690
 InternalName=IDEExplorer
 LegalCopyright=Season's Fall Music
 LegalTrademarks=Season's Fall Music
