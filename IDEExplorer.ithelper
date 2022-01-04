@@ -8,7 +8,7 @@ CompileWithBRCC32=0
 MajorVer=2
 MinorVer=3
 ReleaseVer=1
-BuildVer=696
+BuildVer=709
 ResourceName=IDEExplorerITHVerInfo
 WarnBefore=0
 WarnAfter=0
@@ -35,7 +35,7 @@ ExclusionFiles=
 [VersionInfo]
 CompanyName=Season's Fall Music
 FileDescription=IDEExplorer: A package to allow you to browser the internal fields, properties, methods and events of the IDE
-FileVersion=2.3.1.696
+FileVersion=2.3.1.709
 InternalName=IDEExplorer
 LegalCopyright=Season's Fall Music
 LegalTrademarks=Season's Fall Music
