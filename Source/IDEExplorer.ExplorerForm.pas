@@ -45,7 +45,7 @@ Uses
   ImgList,
   Vcl.StdCtrls,
   VirtualTrees,
-  IDEExplorer.Interfaces, System.ImageList;
+  IDEExplorer.Interfaces;
 
 {$INCLUDE CompilerDefinitions.inc}
 

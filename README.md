@@ -2,11 +2,9 @@
 
 Author:   David Hoyle (davidghoyle@gmail.com / [https://github.com/DGH2112](https://github.com/DGH2112))
 
-Version:  2.3a
+Version:  2.4
 
-Date:     04 Jun 2020
-
-Web Page: [Delphi IDE Explorer](http://www.davidghoyle.co.uk/WordPress/?page_id=928)
+Date:     04 Jan 2022
 
 ## Overview
 
